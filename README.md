@@ -9,6 +9,12 @@ go build -o opm
 sudo mv opm /usr/local/bin/
 ```
 
+## Developping
+
+```bash
+go build -o opm && sudo cp opm /usr/local/bin/
+```
+
 ## Utilisation
 
 ### Installer un package

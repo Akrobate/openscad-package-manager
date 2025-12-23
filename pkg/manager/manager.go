@@ -13,12 +13,12 @@ import (
 )
 
 type Package struct {
-	Name         string   `json:"name" yaml:"name"`
-	Version      string   `json:"version" yaml:"version"`
-	Description  string   `json:"description" yaml:"description"`
-	Repository   string   `json:"repository" yaml:"repository"`
-	Dependencies []string `json:"dependencies" yaml:"dependencies"`
-	Author       string   `json:"author" yaml:"author"`
+	Name         string            `json:"name" yaml:"name"`
+	Version      string            `json:"version" yaml:"version"`
+	Description  string            `json:"description" yaml:"description"`
+	Repository   string            `json:"repository" yaml:"repository"`
+	Dependencies map[string]string `json:"dependencies" yaml:"dependencies"`
+	Author       string            `json:"author" yaml:"author"`
 }
 
 type Manager struct {
@@ -58,9 +58,39 @@ func NewManager() (*Manager, error) {
 }
 
 /**
+ *
+ * Install Curent
+ *
+ */
+func (m *Manager) InstallCurrent() error {
+	fmt.Println("Reading current scad.jsons")
+
+	metadataFile := filepath.Join("scad.json")
+	fmt.Println("1----Reading current scad.jsons")
+
+	pkg, err := m.loadPackageMetadata(metadataFile)
+
+	// Installer les dépendances d'abord
+	for _dep, dep := range pkg.Dependencies {
+		fmt.Println("-------------")
+		fmt.Println(_dep, dep)
+	}
+
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	fmt.Println(pkg)
+
+	return nil
+}
+
+/**
  * Install
  */
 func (m *Manager) Install(packageSpec string) error {
+
 	// Parser le nom du package et la version (format: package@version)
 	name, version := parsePackageSpec(packageSpec)
 
@@ -71,11 +101,11 @@ func (m *Manager) Install(packageSpec string) error {
 	}
 
 	// Installer les dépendances d'abord
-	for _, dep := range pkg.Dependencies {
-		if err := m.Install(dep); err != nil {
-			return fmt.Errorf("failed to install dependency %s: %w", dep, err)
-		}
-	}
+	// for _, dep := range pkg.Dependencies {
+	// 	if err := m.Install(dep); err != nil {
+	// 		return fmt.Errorf("failed to install dependency %s: %w", dep, err)
+	// 	}
+	// }
 
 	// Télécharger et installer le package
 	packageDir := filepath.Join(m.installDir, pkg.Name)

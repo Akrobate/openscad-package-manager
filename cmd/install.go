@@ -16,17 +16,26 @@ Exemples:
   opm install BOSL2
   opm install github.com/user/repo
   opm install package@1.0.0`,
-	Args: cobra.ExactArgs(1),
+	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		packageName := args[0]
-		
+		var packageName string
+		if len(args) > 0 {
+			packageName = args[0]
+		}
+
 		mgr, err := manager.NewManager()
 		if err != nil {
 			return fmt.Errorf("failed to initialize manager: %w", err)
 		}
 
+		if packageName == "" {
+			mgr.InstallCurrent()
+			// comportement par défaut (ex: installer depuis un fichier, tout mettre à jour, etc.)
+			return nil
+		}
+
 		fmt.Printf("Installation de %s...\n", packageName)
-		
+
 		if err := mgr.Install(packageName); err != nil {
 			return fmt.Errorf("failed to install package: %w", err)
 		}
@@ -39,4 +48,3 @@ Exemples:
 func init() {
 	rootCmd.AddCommand(installCmd)
 }
-
