@@ -21,6 +21,12 @@ type Package struct {
 	Author       string            `json:"author" yaml:"author"`
 }
 
+type Dependency struct {
+	Name       string
+	Repository string
+	commit     string
+}
+
 type Manager struct {
 	registryURL string
 	installDir  string
@@ -70,18 +76,27 @@ func (m *Manager) InstallCurrent() error {
 
 	pkg, err := m.loadPackageMetadata(metadataFile)
 
-	// Installer les dépendances d'abord
-	for _dep, dep := range pkg.Dependencies {
-		fmt.Println("-------------")
-		fmt.Println(_dep, dep)
-	}
-
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("scad.json not found")
 		return nil
 	}
 
+	// Installer les dépendances d'abord
+	for _dep, dep := range pkg.Dependencies {
+		fmt.Println("-------------")
+		fmt.Println(_dep, "****", dep)
+	}
+
+	var dependencies []Dependency
+
+	dependencies = append(dependencies, Dependency{
+		Name:       "Coucou",
+		Repository: "Coucou",
+		commit:     "Coucou",
+	})
+
 	fmt.Println(pkg)
+	fmt.Println(dependencies)
 
 	return nil
 }
