@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
@@ -79,6 +80,26 @@ func (m *Manager) InstallCurrent() error {
 	if err != nil {
 		fmt.Println("scad.json not found")
 		return nil
+	}
+
+	os.RemoveAll(".tmp")
+
+	err = os.Mkdir(".tmp", 0755)
+	if err != nil {
+		fmt.Println("Cannot create temporary folder")
+		return nil
+	}
+
+	_, err = git.PlainClone(
+		"./.tmp/coucou",
+		false,
+		&git.CloneOptions{
+			URL: "https://gitlab.com/openscad-modules/he14.git",
+		},
+	)
+
+	if err != nil {
+		panic(err)
 	}
 
 	// Installer les dépendances d'abord
