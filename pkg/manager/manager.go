@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -32,6 +34,11 @@ type Manager struct {
 	registryURL string
 	installDir  string
 	cacheDir    string
+}
+
+type GitRef struct {
+	Repo string
+	Ref  string // commit / tag / branch
 }
 
 func NewManager() (*Manager, error) {
@@ -318,4 +325,21 @@ func parsePackageSpec(spec string) (name, version string) {
 		version = parts[1]
 	}
 	return name, version
+}
+
+
+func parseGitURL(raw string) (*GitRef, error) {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	// Nom du repo
+	base := path.Base(u.Path)
+	repo := strings.TrimSuffix(base, ".git")
+
+	return &GitRef{
+		Repo: repo,
+		Ref:  u.Fragment, // tout ce qui est après #
+	}, nil
 }
