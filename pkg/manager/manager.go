@@ -9,11 +9,16 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"log"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
+
+var scad_modules_foldername = "openscad_modules"
+
 
 type Package struct {
 	Name         string            `json:"name" yaml:"name"`
@@ -37,8 +42,9 @@ type Manager struct {
 }
 
 type GitRef struct {
-	Repo string
+	Name string
 	Ref  string // commit / tag / branch
+	URL string
 }
 
 func NewManager() (*Manager, error) {
@@ -79,55 +85,73 @@ func NewManager() (*Manager, error) {
 func (m *Manager) InstallCurrent() error {
 	fmt.Println("Reading current scad.jsons")
 
-	metadataFile := filepath.Join("scad.json")
-	fmt.Println("1----Reading current scad.jsons")
-
-	pkg, err := m.loadPackageMetadata(metadataFile)
+	pkg, err := m.loadPackageMetadata(filepath.Join("scad.json"))
 
 	if err != nil {
 		fmt.Println("scad.json not found")
 		return nil
 	}
 
-	os.RemoveAll(".tmp")
+	os.RemoveAll(scad_modules_foldername)
 
-	err = os.Mkdir(".tmp", 0755)
+	err = os.Mkdir(scad_modules_foldername, 0755)
 	if err != nil {
 		fmt.Println("Cannot create temporary folder")
 		return nil
 	}
 
-	_, err = git.PlainClone(
-		"./.tmp/coucou",
-		false,
-		&git.CloneOptions{
-			URL: "https://gitlab.com/openscad-modules/he14.git",
-		},
-	)
-
-	if err != nil {
-		panic(err)
-	}
+	// var dependencies []Dependency
+	// fmt.Println(pkg.Dependencies)
 
 	// Installer les dépendances d'abord
-	for _dep, dep := range pkg.Dependencies {
-		fmt.Println("-------------")
-		fmt.Println(_dep, "****", dep)
+	for name, repository_url := range pkg.Dependencies {
+		fmt.Println("Installing: " + name + " url: " + repository_url)
+		
+		ref, err := parseGitURL(repository_url)
+
+		fmt.Println(ref)
+
+		if err != nil {
+			fmt.Println("Cannot parse url of dependency: " + name)
+		}
+
+		var repo *git.Repository
+		repo, err = git.PlainClone(
+			filepath.Join(scad_modules_foldername, ref.Name),
+			false,
+			&git.CloneOptions{
+				URL: ref.URL,
+				SingleBranch:  false,
+			},
+		)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = repo.Fetch(&git.FetchOptions{
+			RemoteName: "origin",
+		})
+
+
+
+		CheckoutRef(repo, ref.Ref)
+
 	}
 
-	var dependencies []Dependency
+	// dependencies = append(dependencies, Dependency{
+	// 	Name:       "Coucou",
+	// 	Repository: "Coucou",
+	// 	commit:     "Coucou",
+	// })
 
-	dependencies = append(dependencies, Dependency{
-		Name:       "Coucou",
-		Repository: "Coucou",
-		commit:     "Coucou",
-	})
-
-	fmt.Println(pkg)
-	fmt.Println(dependencies)
+	// fmt.Println(pkg)
+	// fmt.Println(dependencies)
 
 	return nil
 }
+
+
 
 /**
  * Install
@@ -338,8 +362,61 @@ func parseGitURL(raw string) (*GitRef, error) {
 	base := path.Base(u.Path)
 	repo := strings.TrimSuffix(base, ".git")
 
+	// Récupérer le fragment avant de le supprimer
+	ref := strings.TrimSpace(u.Fragment)
+
+	// Supprimer le fragment pour reconstruire l'URL sans #
+	u.Fragment = ""
+	urlWithoutFragment := u.String()
+
 	return &GitRef{
-		Repo: repo,
-		Ref:  u.Fragment, // tout ce qui est après #
+		Name: repo,
+		Ref:  ref,
+		URL:  urlWithoutFragment,
 	}, nil
+}
+
+
+func CheckoutRef(repo *git.Repository, ref string) error {
+
+	fmt.Println("REEEEFF:::: " + ref)
+
+	w, err := repo.Worktree()
+	if err != nil {
+		return err
+	}
+
+	// Essayer comme commit hash
+	hash := plumbing.NewHash(ref)
+	err = w.Checkout(&git.CheckoutOptions{
+		Hash: hash,
+		Force: true,
+	})
+	if err == nil {
+		return nil
+	} else {
+		fmt.Println("NOT AN HASH")
+	}
+
+	// Essayer comme branche
+	err = w.Checkout(&git.CheckoutOptions{
+		Branch: plumbing.NewBranchReferenceName(ref),
+		Force: true,
+	})
+	if err == nil {
+		return nil
+	} else {
+		fmt.Println("NOT A BRANCH")
+	}
+
+	// Essayer comme tag
+	err = w.Checkout(&git.CheckoutOptions{
+		Branch: plumbing.NewTagReferenceName(ref),
+		Force: true,
+	})
+	if err != nil {
+		fmt.Println("NOT A TAG")
+	}
+
+	return err
 }
