@@ -14,13 +14,22 @@ var uninstallCmd = &cobra.Command{
 
 Exemples:
   opm uninstall BOSL2`,
-	Args: cobra.ExactArgs(1),
+	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		packageName := args[0]
+		var packageName string
+		if len(args) > 0 {
+			packageName = args[0]
+		}
 		
 		mgr, err := manager.NewManager()
 		if err != nil {
 			return fmt.Errorf("failed to initialize manager: %w", err)
+		}
+
+		if packageName == "" {
+			mgr.UninstallAll()
+			fmt.Println("✓ Packages désinstalés avec succès")
+			return nil
 		}
 
 		fmt.Printf("Désinstallation de %s...\n", packageName)

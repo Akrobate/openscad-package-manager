@@ -29,7 +29,7 @@ var listCmd = &cobra.Command{
 
 		fmt.Println("Packages installés:")
 		for _, pkg := range packages {
-			fmt.Printf("  - %s@%s\n", pkg.Name, pkg.Version)
+			fmt.Printf("  - %s#%s - %s\n", pkg.Name, pkg.Version, pkg.Commit)
 		}
 
 		return nil

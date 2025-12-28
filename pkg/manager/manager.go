@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"log"
+	"regexp"
+	"io/fs"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -19,12 +21,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var scad_modules_foldername = "openscad_modules"
 
 type Manager struct {
 	registryURL string
 	installDir  string
 	cacheDir    string
+	tmpDir	string
+	localModulesFolder	string
+	packageFile string
 }
 
 type Package struct {
@@ -34,12 +38,18 @@ type Package struct {
 	Repository   string            `json:"repository" yaml:"repository"`
 	Dependencies map[string]string `json:"dependencies" yaml:"dependencies"`
 	Author       string            `json:"author" yaml:"author"`
+	Commit 		string
+	FolderName 	string
 }
 
 type Dependency struct {
 	Name       string
-	Repository string
+	URL string
+	Ref	string
+	Dependecy string
 	commit     string
+	IsSubDependecy string
+	IsInstalled string
 }
 
 type GitRef struct {
@@ -59,10 +69,13 @@ func NewManager() (*Manager, error) {
 		registryURL = "https://registry.openscad-packages.org"
 	}
 
+	var scad_modules_foldername = "openscad_modules"
+	var packageFile = "scad.json"
+
 	installDir := filepath.Join(homeDir, ".opm", "packages")
 	cacheDir := filepath.Join(homeDir, ".opm", "cache")
+	tmpDir := filepath.Join(homeDir, ".opm", "tmp")
 
-	// Créer les répertoires si nécessaire
 	if err := os.MkdirAll(installDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create install directory: %w", err)
 	}
@@ -71,10 +84,17 @@ func NewManager() (*Manager, error) {
 		return nil, fmt.Errorf("failed to create cache directory: %w", err)
 	}
 
+	if err := os.MkdirAll(tmpDir, 0755); err != nil {
+		return nil, fmt.Errorf("failed to create cache directory: %w", err)
+	}
+
 	return &Manager{
 		registryURL: registryURL,
 		installDir:  installDir,
 		cacheDir:    cacheDir,
+		tmpDir: tmpDir,
+		localModulesFolder: filepath.Join(scad_modules_foldername),
+		packageFile: packageFile,
 	}, nil
 }
 
@@ -86,125 +106,115 @@ func NewManager() (*Manager, error) {
 func (m *Manager) InstallCurrent() error {
 	fmt.Println("Reading current scad.jsons")
 
-	pkg, err := m.loadPackageMetadata(filepath.Join("scad.json"))
+	dir, err := os.Getwd()
+	pkg, err := m.loadPackageMetadata(dir)
 
 	if err != nil {
 		fmt.Println("scad.json not found")
 		return nil
 	}
 
-	os.RemoveAll(scad_modules_foldername)
-
-	err = os.Mkdir(scad_modules_foldername, 0755)
+	os.RemoveAll(m.localModulesFolder)
+	err = os.Mkdir(m.localModulesFolder, 0755)
 	if err != nil {
 		fmt.Println("Cannot create temporary folder")
 		return nil
 	}
 
 	// Installer les dépendances d'abord
-	for name, repository_url := range pkg.Dependencies {
-		fmt.Println("Installing: " + name + " url: " + repository_url)
-		
-		ref, err := parseGitURL(repository_url)
-
-		if err != nil {
-			fmt.Println("Cannot parse url of dependency: " + name)
-		}
-
-		var repo *git.Repository
-		repo, err = git.PlainClone(
-			filepath.Join(scad_modules_foldername, ref.Name),
-			false,
-			&git.CloneOptions{
-				URL: ref.URL,
-				SingleBranch:  false,
-			},
-		)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = repo.Fetch(&git.FetchOptions{
-			RefSpecs: []config.RefSpec{"refs/*:refs/*", "HEAD:refs/heads/HEAD"},
-		})
-
-		if err != nil {
-			log.Println("Fetch", err)
-			return nil
-		}
-
-		h, _ := repo.ResolveRevision(plumbing.Revision(ref.Ref))
-		w, _ := repo.Worktree()
-		w.Checkout(&git.CheckoutOptions{
-			Hash: *h,
-		})
-
+	for _, repository_url := range pkg.Dependencies {
+		m.Install(repository_url, false)
 	}
-
-	// dependencies = append(dependencies, Dependency{
-	// 	Name:       "Coucou",
-	// 	Repository: "Coucou",
-	// 	commit:     "Coucou",
-	// })
-
-	// fmt.Println(pkg)
-	// fmt.Println(dependencies)
 
 	return nil
 }
-
 
 
 /**
  * Install
  */
-func (m *Manager) Install(packageSpec string) error {
+func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, error) {
 
-	// Parser le nom du package et la version (format: package@version)
-	name, version := parsePackageSpec(packageSpec)
-
-	// Récupérer les informations du package depuis le registre
-	pkg, err := m.fetchPackageInfo(name, version)
+	ref, err := parseGitURL(packageSpec)
 	if err != nil {
-		return fmt.Errorf("failed to fetch package info: %w", err)
+		fmt.Println("Cannot parse url of dependency: " + ref.Name)
+	}
+	fmt.Println("Installing: " + ref.Name + " url: " + packageSpec)
+
+	var finalFolderName = ref.Name
+
+	os.RemoveAll(filepath.Join(m.tmpDir, ref.Name))
+	m.downloadPackage(ref.URL, ref.Ref, filepath.Join(m.tmpDir, ref.Name))
+	pkg, err := m.loadPackageMetadata(filepath.Join(m.tmpDir, ref.Name))
+	
+	if isSubDependecy {
+		finalFolderName = ref.Name + "#" + pkg.Commit
 	}
 
-	// Installer les dépendances d'abord
-	// for _, dep := range pkg.Dependencies {
-	// 	if err := m.Install(dep); err != nil {
-	// 		return fmt.Errorf("failed to install dependency %s: %w", dep, err)
-	// 	}
-	// }
-
-	// Télécharger et installer le package
-	packageDir := filepath.Join(m.installDir, pkg.Name)
-	if err := os.MkdirAll(packageDir, 0755); err != nil {
-		return fmt.Errorf("failed to create package directory: %w", err)
+	_, err = os.Stat(filepath.Join(m.localModulesFolder, finalFolderName))
+	if (err == nil) {
+		fmt.Println(ref.Name + " Already installed")
+		return finalFolderName, nil
 	}
 
-	// Pour l'instant, on simule l'installation
-	// Dans une implémentation complète, on téléchargerait depuis le repository
-	if err := m.downloadPackage(pkg, packageDir); err != nil {
-		return fmt.Errorf("failed to download package: %w", err)
+	err = os.Rename(filepath.Join(m.tmpDir, ref.Name), filepath.Join(m.localModulesFolder, finalFolderName))
+	if err != nil {
+		fmt.Println("Cannot move file from: " + filepath.Join(m.tmpDir, ref.Name + " to: " + filepath.Join(m.localModulesFolder, finalFolderName)))
+	}
+	
+	err = os.RemoveAll(filepath.Join(m.tmpDir, ref.Name))
+	if err != nil {
+		fmt.Println("Erreur :", err)
 	}
 
-	// Enregistrer les métadonnées du package
-	metadataFile := filepath.Join(packageDir, "package.yaml")
-	if err := m.savePackageMetadata(pkg, metadataFile); err != nil {
-		return fmt.Errorf("failed to save package metadata: %w", err)
+	for _, repository_url := range pkg.Dependencies {
+
+		package_name, err := m.Install(repository_url, true)
+		
+		if err != nil {
+			fmt.Println("Install fail " + repository_url)
+		}
+
+		dependecyRef, err := parseGitURL(repository_url)
+
+		if err != nil {
+			fmt.Println("parseGitURL " + repository_url)
+		}
+
+		replacePathInModules(
+			filepath.Join(m.localModulesFolder, finalFolderName),
+			"openscad_modules/" + dependecyRef.Name,
+			"../" + package_name,
+		)
 	}
 
-	return nil
+	return finalFolderName, nil
 }
 
+
+/**
+ * Uninstall
+ */
 func (m *Manager) Uninstall(packageName string) error {
-	fmt.Println("uninstalling " + packageName)
 	return nil
 }
 
+
+/**
+ * Uninstall
+ */
+func (m *Manager) UninstallAll() error {
+	os.RemoveAll(m.localModulesFolder)
+	os.Mkdir(m.localModulesFolder, 0755)
+	return nil
+}
+
+
+/**
+ * List
+ */
 func (m *Manager) List() ([]Package, error) {
-	entries, err := os.ReadDir(m.installDir)
+	entries, err := os.ReadDir(m.localModulesFolder)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []Package{}, nil
@@ -216,12 +226,13 @@ func (m *Manager) List() ([]Package, error) {
 	for _, entry := range entries {
 		if !entry.IsDir() {
 			continue
+			fmt.Println("continue")
 		}
 
-		metadataFile := filepath.Join(m.installDir, entry.Name(), "package.yaml")
+		metadataFile := filepath.Join(m.localModulesFolder, entry.Name())
 		pkg, err := m.loadPackageMetadata(metadataFile)
 		if err != nil {
-			// Ignorer les packages sans métadonnées valides
+			fmt.Println(err)
 			continue
 		}
 
@@ -231,6 +242,9 @@ func (m *Manager) List() ([]Package, error) {
 	return packages, nil
 }
 
+/**
+ * Search
+ */
 func (m *Manager) Search(query string) ([]Package, error) {
 	// Pour l'instant, on simule une recherche
 	// Dans une implémentation complète, on interrogerait le registre
@@ -255,59 +269,51 @@ func (m *Manager) Search(query string) ([]Package, error) {
 	return results, nil
 }
 
+/**
+ * fetchPackageInfo
+ */
 func (m *Manager) fetchPackageInfo(name, version string) (*Package, error) {
-	// Pour l'instant, on simule la récupération
-	// Dans une implémentation complète, on interrogerait le registre
-	url := fmt.Sprintf("%s/api/package/%s", m.registryURL, name)
-	if version != "" {
-		url += "?version=" + version
-	}
-
-	resp, err := http.Get(url)
-	if err != nil {
-		// Si le registre n'est pas disponible, créer un package par défaut
-		return &Package{
-			Name:        name,
-			Version:     version,
-			Description: fmt.Sprintf("Package %s", name),
-			Repository:  fmt.Sprintf("https://github.com/%s", name),
-		}, nil
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return &Package{
-			Name:        name,
-			Version:     version,
-			Description: fmt.Sprintf("Package %s", name),
-			Repository:  fmt.Sprintf("https://github.com/%s", name),
-		}, nil
-	}
-
-	var pkg Package
-	if err := json.NewDecoder(resp.Body).Decode(&pkg); err != nil {
-		return nil, fmt.Errorf("failed to decode package info: %w", err)
-	}
-
-	return &pkg, nil
+	fmt.Println(name, version)
+	return nil, nil
 }
 
-func (m *Manager) downloadPackage(pkg *Package, destDir string) error {
-	// Pour l'instant, on simule le téléchargement
-	// Dans une implémentation complète, on clonerait le repository Git
-	// ou téléchargerait depuis une URL
 
-	// Créer un fichier README pour indiquer que le package est installé
-	readmePath := filepath.Join(destDir, "README.md")
-	readmeContent := fmt.Sprintf("# %s\n\n%s\n\nVersion: %s\nRepository: %s\n",
-		pkg.Name, pkg.Description, pkg.Version, pkg.Repository)
+/**
+ * downloadPackage
+ */
+func (m *Manager) downloadPackage(url string, git_ref string, destination_directory string) error {
 
-	if err := os.WriteFile(readmePath, []byte(readmeContent), 0644); err != nil {
-		return fmt.Errorf("failed to create README: %w", err)
+	repository, err := git.PlainClone(
+		destination_directory,
+		false,
+		&git.CloneOptions{
+			URL: url,
+			SingleBranch:  false,
+		},
+	)
+
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	err = repository.Fetch(&git.FetchOptions{
+		RefSpecs: []config.RefSpec{"refs/*:refs/*", "HEAD:refs/heads/HEAD"},
+	})
+
+	if err != nil {
+		log.Println("Fetch", err)
+		return err
+	}
+
+	h, _ := repository.ResolveRevision(plumbing.Revision(git_ref))
+	work_tree, _ := repository.Worktree()
+	work_tree.Checkout(&git.CheckoutOptions{
+		Hash: *h,
+	})
 
 	return nil
 }
+
 
 func (m *Manager) savePackageMetadata(pkg *Package, filePath string) error {
 	data, err := yaml.Marshal(pkg)
@@ -323,7 +329,8 @@ func (m *Manager) savePackageMetadata(pkg *Package, filePath string) error {
 }
 
 func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
-	data, err := os.ReadFile(filePath)
+	
+	data, err := os.ReadFile(filepath.Join(filePath, m.packageFile))
 	if err != nil {
 		return nil, fmt.Errorf("failed to read metadata file: %w", err)
 	}
@@ -332,6 +339,9 @@ func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 	if err := yaml.Unmarshal(data, &pkg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal package metadata: %w", err)
 	}
+
+	commit, _ := gitCommitShort(filePath)
+	pkg.Commit = commit
 
 	return &pkg, nil
 }
@@ -369,3 +379,55 @@ func parseGitURL(raw string) (*GitRef, error) {
 		URL:  urlWithoutFragment,
 	}, nil
 }
+
+
+func gitCommitShort(repository_path string) (string, error) {
+    repo, err := git.PlainOpen(repository_path)
+    if err != nil {
+        return "", err
+    }
+    ref, err := repo.Head()
+    if err != nil {
+        return "", err
+    }
+    hash := ref.Hash().String()
+    return hash[:7], nil
+}
+
+
+func replacePathInModules(rootDir string, from string, to string) {
+
+	re := regexp.MustCompile(`<([^>]+)>`)
+
+	err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() || filepath.Ext(path) != ".scad" {
+			return nil
+		}
+
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		modified := re.ReplaceAllStringFunc(string(data), func(s string) string {
+			content := s[1 : len(s)-1] // retirer les <>
+			content = regexp.MustCompile(from).ReplaceAllString(content, to)
+			return "<" + content + ">"
+		})
+
+		if err := os.WriteFile(path, []byte(modified), 0755); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		fmt.Println("Erreur :", err)
+	}
+}
+

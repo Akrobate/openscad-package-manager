@@ -28,7 +28,6 @@ Exemples:
 			return fmt.Errorf("failed to initialize manager: %w", err)
 		}
 
-		// comportement par défaut (ex: installer depuis un fichier, tout mettre à jour, etc.)
 		if packageName == "" {
 			mgr.InstallCurrent()
 			return nil
@@ -36,7 +35,7 @@ Exemples:
 
 		fmt.Printf("Installation de %s...\n", packageName)
 
-		if err := mgr.Install(packageName); err != nil {
+		if _, err := mgr.Install(packageName, false); err != nil {
 			return fmt.Errorf("failed to install package: %w", err)
 		}
 
