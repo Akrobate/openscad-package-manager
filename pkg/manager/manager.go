@@ -21,6 +21,11 @@ import (
 
 var scad_modules_foldername = "openscad_modules"
 
+type Manager struct {
+	registryURL string
+	installDir  string
+	cacheDir    string
+}
 
 type Package struct {
 	Name         string            `json:"name" yaml:"name"`
@@ -35,12 +40,6 @@ type Dependency struct {
 	Name       string
 	Repository string
 	commit     string
-}
-
-type Manager struct {
-	registryURL string
-	installDir  string
-	cacheDir    string
 }
 
 type GitRef struct {
@@ -102,9 +101,6 @@ func (m *Manager) InstallCurrent() error {
 		return nil
 	}
 
-	// var dependencies []Dependency
-	// fmt.Println(pkg.Dependencies)
-
 	// Installer les dépendances d'abord
 	for name, repository_url := range pkg.Dependencies {
 		fmt.Println("Installing: " + name + " url: " + repository_url)
@@ -137,9 +133,8 @@ func (m *Manager) InstallCurrent() error {
 			log.Println("Fetch", err)
 			return nil
 		}
-				
-		h, _ := repo.ResolveRevision(plumbing.Revision(ref.Ref))
 
+		h, _ := repo.ResolveRevision(plumbing.Revision(ref.Ref))
 		w, _ := repo.Worktree()
 		w.Checkout(&git.CheckoutOptions{
 			Hash: *h,
