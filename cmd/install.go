@@ -28,9 +28,9 @@ Exemples:
 			return fmt.Errorf("failed to initialize manager: %w", err)
 		}
 
+		// comportement par défaut (ex: installer depuis un fichier, tout mettre à jour, etc.)
 		if packageName == "" {
 			mgr.InstallCurrent()
-			// comportement par défaut (ex: installer depuis un fichier, tout mettre à jour, etc.)
 			return nil
 		}
 

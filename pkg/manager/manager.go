@@ -13,6 +13,8 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/config"
+
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
@@ -109,8 +111,6 @@ func (m *Manager) InstallCurrent() error {
 		
 		ref, err := parseGitURL(repository_url)
 
-		fmt.Println(ref)
-
 		if err != nil {
 			fmt.Println("Cannot parse url of dependency: " + name)
 		}
@@ -130,12 +130,20 @@ func (m *Manager) InstallCurrent() error {
 		}
 
 		err = repo.Fetch(&git.FetchOptions{
-			RemoteName: "origin",
+			RefSpecs: []config.RefSpec{"refs/*:refs/*", "HEAD:refs/heads/HEAD"},
 		})
 
+		if err != nil {
+			log.Println("Fetch", err)
+			return nil
+		}
+				
+		h, _ := repo.ResolveRevision(plumbing.Revision(ref.Ref))
 
-
-		CheckoutRef(repo, ref.Ref)
+		w, _ := repo.Worktree()
+		w.Checkout(&git.CheckoutOptions{
+			Hash: *h,
+		})
 
 	}
 
@@ -196,16 +204,7 @@ func (m *Manager) Install(packageSpec string) error {
 }
 
 func (m *Manager) Uninstall(packageName string) error {
-	packageDir := filepath.Join(m.installDir, packageName)
-
-	if _, err := os.Stat(packageDir); os.IsNotExist(err) {
-		return fmt.Errorf("package %s is not installed", packageName)
-	}
-
-	if err := os.RemoveAll(packageDir); err != nil {
-		return fmt.Errorf("failed to remove package directory: %w", err)
-	}
-
+	fmt.Println("uninstalling " + packageName)
 	return nil
 }
 
@@ -374,49 +373,4 @@ func parseGitURL(raw string) (*GitRef, error) {
 		Ref:  ref,
 		URL:  urlWithoutFragment,
 	}, nil
-}
-
-
-func CheckoutRef(repo *git.Repository, ref string) error {
-
-	fmt.Println("REEEEFF:::: " + ref)
-
-	w, err := repo.Worktree()
-	if err != nil {
-		return err
-	}
-
-	// Essayer comme commit hash
-	hash := plumbing.NewHash(ref)
-	err = w.Checkout(&git.CheckoutOptions{
-		Hash: hash,
-		Force: true,
-	})
-	if err == nil {
-		return nil
-	} else {
-		fmt.Println("NOT AN HASH")
-	}
-
-	// Essayer comme branche
-	err = w.Checkout(&git.CheckoutOptions{
-		Branch: plumbing.NewBranchReferenceName(ref),
-		Force: true,
-	})
-	if err == nil {
-		return nil
-	} else {
-		fmt.Println("NOT A BRANCH")
-	}
-
-	// Essayer comme tag
-	err = w.Checkout(&git.CheckoutOptions{
-		Branch: plumbing.NewTagReferenceName(ref),
-		Force: true,
-	})
-	if err != nil {
-		fmt.Println("NOT A TAG")
-	}
-
-	return err
 }
