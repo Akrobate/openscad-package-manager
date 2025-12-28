@@ -98,19 +98,18 @@ func NewManager() (*Manager, error) {
 	}, nil
 }
 
+
 /**
- *
  * Install Curent
- *
  */
 func (m *Manager) InstallCurrent() error {
-	fmt.Println("Reading current scad.jsons")
+	fmt.Println("Reading current " + m.packageFile)
 
 	dir, err := os.Getwd()
 	pkg, err := m.loadPackageMetadata(dir)
 
 	if err != nil {
-		fmt.Println("scad.json not found")
+		fmt.Println(m.packageFile + " not found")
 		return nil
 	}
 
@@ -121,7 +120,6 @@ func (m *Manager) InstallCurrent() error {
 		return nil
 	}
 
-	// Installer les dépendances d'abord
 	for _, repository_url := range pkg.Dependencies {
 		m.Install(repository_url, false)
 	}
