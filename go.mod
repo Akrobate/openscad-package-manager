@@ -1,4 +1,4 @@
-module github.com/openscad-package-manager/opm
+module github.com/Akrobate/openscad-package-manager
 
 go 1.23.0
 

@@ -3,14 +3,14 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/openscad-package-manager/opm/pkg/manager"
+	"github.com/Akrobate/openscad-package-manager/pkg/manager"
 	"github.com/spf13/cobra"
 )
 
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Lister les packages installés",
-	Long: `Affiche la liste de tous les packages OpenSCAD installés localement.`,
+	Long:  `Affiche la liste de tous les packages OpenSCAD installés localement.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mgr, err := manager.NewManager()
 		if err != nil {
@@ -39,4 +39,3 @@ var listCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(listCmd)
 }
-

@@ -1,34 +1,26 @@
 package manager
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"log"
 	"net/url"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
-	"log"
-	"regexp"
-	"io/fs"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
 
-	"github.com/spf13/viper"
+	"github.com/Akrobate/openscad-package-manager/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
-
 type Manager struct {
-	registryURL string
-	installDir  string
-	cacheDir    string
-	tmpDir	string
-	localModulesFolder	string
-	packageFile string
+	tmpDir             string
+	localModulesFolder string
+	packageFile        string
 }
 
 type Package struct {
@@ -38,24 +30,13 @@ type Package struct {
 	Repository   string            `json:"repository" yaml:"repository"`
 	Dependencies map[string]string `json:"dependencies" yaml:"dependencies"`
 	Author       string            `json:"author" yaml:"author"`
-	Commit 		string
-	FolderName 	string
-}
-
-type Dependency struct {
-	Name       string
-	URL string
-	Ref	string
-	Dependecy string
-	commit     string
-	IsSubDependecy string
-	IsInstalled string
+	Commit       string
 }
 
 type GitRef struct {
 	Name string
 	Ref  string // commit / tag / branch
-	URL string
+	URL  string
 }
 
 func NewManager() (*Manager, error) {
@@ -64,40 +45,21 @@ func NewManager() (*Manager, error) {
 		return nil, fmt.Errorf("failed to get home directory: %w", err)
 	}
 
-	registryURL := viper.GetString("registry")
-	if registryURL == "" {
-		registryURL = "https://registry.openscad-packages.org"
-	}
-
 	var scad_modules_foldername = "openscad_modules"
 	var packageFile = "scad.json"
 
-	installDir := filepath.Join(homeDir, ".opm", "packages")
-	cacheDir := filepath.Join(homeDir, ".opm", "cache")
 	tmpDir := filepath.Join(homeDir, ".opm", "tmp")
-
-	if err := os.MkdirAll(installDir, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create install directory: %w", err)
-	}
-
-	if err := os.MkdirAll(cacheDir, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create cache directory: %w", err)
-	}
 
 	if err := os.MkdirAll(tmpDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create cache directory: %w", err)
 	}
 
 	return &Manager{
-		registryURL: registryURL,
-		installDir:  installDir,
-		cacheDir:    cacheDir,
-		tmpDir: tmpDir,
+		tmpDir:             tmpDir,
 		localModulesFolder: filepath.Join(scad_modules_foldername),
-		packageFile: packageFile,
+		packageFile:        packageFile,
 	}, nil
 }
-
 
 /**
  * Install Curent
@@ -127,7 +89,6 @@ func (m *Manager) InstallCurrent() error {
 	return nil
 }
 
-
 /**
  * Install
  */
@@ -144,22 +105,22 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 	os.RemoveAll(filepath.Join(m.tmpDir, ref.Name))
 	m.downloadPackage(ref.URL, ref.Ref, filepath.Join(m.tmpDir, ref.Name))
 	pkg, err := m.loadPackageMetadata(filepath.Join(m.tmpDir, ref.Name))
-	
+
 	if isSubDependecy {
 		finalFolderName = ref.Name + "#" + pkg.Commit
 	}
 
 	_, err = os.Stat(filepath.Join(m.localModulesFolder, finalFolderName))
-	if (err == nil) {
+	if err == nil {
 		fmt.Println(ref.Name + " Already installed")
 		return finalFolderName, nil
 	}
 
 	err = os.Rename(filepath.Join(m.tmpDir, ref.Name), filepath.Join(m.localModulesFolder, finalFolderName))
 	if err != nil {
-		fmt.Println("Cannot move file from: " + filepath.Join(m.tmpDir, ref.Name + " to: " + filepath.Join(m.localModulesFolder, finalFolderName)))
+		fmt.Println("Cannot move file from: " + filepath.Join(m.tmpDir, ref.Name+" to: "+filepath.Join(m.localModulesFolder, finalFolderName)))
 	}
-	
+
 	err = os.RemoveAll(filepath.Join(m.tmpDir, ref.Name))
 	if err != nil {
 		fmt.Println("Erreur :", err)
@@ -168,7 +129,7 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 	for _, repository_url := range pkg.Dependencies {
 
 		package_name, err := m.Install(repository_url, true)
-		
+
 		if err != nil {
 			fmt.Println("Install fail " + repository_url)
 		}
@@ -179,24 +140,22 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 			fmt.Println("parseGitURL " + repository_url)
 		}
 
-		replacePathInModules(
+		utils.OpenscadReplaceDependienciesPathes(
 			filepath.Join(m.localModulesFolder, finalFolderName),
-			"openscad_modules/" + dependecyRef.Name,
-			"../" + package_name,
+			"openscad_modules/"+dependecyRef.Name,
+			"../"+package_name,
 		)
 	}
 
 	return finalFolderName, nil
 }
 
-
 /**
  * Uninstall
  */
 func (m *Manager) Uninstall(packageName string) error {
-	return nil
+	return fmt.Errorf("Unitary uninstal, not implemented, use \"opm uninstall\" instead")
 }
-
 
 /**
  * Uninstall
@@ -206,7 +165,6 @@ func (m *Manager) UninstallAll() error {
 	os.Mkdir(m.localModulesFolder, 0755)
 	return nil
 }
-
 
 /**
  * List
@@ -224,16 +182,13 @@ func (m *Manager) List() ([]Package, error) {
 	for _, entry := range entries {
 		if !entry.IsDir() {
 			continue
-			fmt.Println("continue")
 		}
-
 		metadataFile := filepath.Join(m.localModulesFolder, entry.Name())
 		pkg, err := m.loadPackageMetadata(metadataFile)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
-
 		packages = append(packages, *pkg)
 	}
 
@@ -244,26 +199,7 @@ func (m *Manager) List() ([]Package, error) {
  * Search
  */
 func (m *Manager) Search(query string) ([]Package, error) {
-	// Pour l'instant, on simule une recherche
-	// Dans une implémentation complète, on interrogerait le registre
-	url := fmt.Sprintf("%s/api/search?q=%s", m.registryURL, query)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		// Si le registre n'est pas disponible, retourner une liste vide
-		return []Package{}, nil
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return []Package{}, nil
-	}
-
 	var results []Package
-	if err := json.NewDecoder(resp.Body).Decode(&results); err != nil {
-		return []Package{}, nil
-	}
-
 	return results, nil
 }
 
@@ -275,7 +211,6 @@ func (m *Manager) fetchPackageInfo(name, version string) (*Package, error) {
 	return nil, nil
 }
 
-
 /**
  * downloadPackage
  */
@@ -285,8 +220,8 @@ func (m *Manager) downloadPackage(url string, git_ref string, destination_direct
 		destination_directory,
 		false,
 		&git.CloneOptions{
-			URL: url,
-			SingleBranch:  false,
+			URL:          url,
+			SingleBranch: false,
 		},
 	)
 
@@ -312,7 +247,6 @@ func (m *Manager) downloadPackage(url string, git_ref string, destination_direct
 	return nil
 }
 
-
 func (m *Manager) savePackageMetadata(pkg *Package, filePath string) error {
 	data, err := yaml.Marshal(pkg)
 	if err != nil {
@@ -327,7 +261,7 @@ func (m *Manager) savePackageMetadata(pkg *Package, filePath string) error {
 }
 
 func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
-	
+
 	data, err := os.ReadFile(filepath.Join(filePath, m.packageFile))
 	if err != nil {
 		return nil, fmt.Errorf("failed to read metadata file: %w", err)
@@ -338,21 +272,11 @@ func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 		return nil, fmt.Errorf("failed to unmarshal package metadata: %w", err)
 	}
 
-	commit, _ := gitCommitShort(filePath)
+	commit, _ := utils.GetGitHeadShortCommit(filePath)
 	pkg.Commit = commit
 
 	return &pkg, nil
 }
-
-func parsePackageSpec(spec string) (name, version string) {
-	parts := strings.Split(spec, "@")
-	name = parts[0]
-	if len(parts) > 1 {
-		version = parts[1]
-	}
-	return name, version
-}
-
 
 func parseGitURL(raw string) (*GitRef, error) {
 	u, err := url.Parse(raw)
@@ -360,14 +284,10 @@ func parseGitURL(raw string) (*GitRef, error) {
 		return nil, err
 	}
 
-	// Nom du repo
 	base := path.Base(u.Path)
 	repo := strings.TrimSuffix(base, ".git")
-
-	// Récupérer le fragment avant de le supprimer
 	ref := strings.TrimSpace(u.Fragment)
 
-	// Supprimer le fragment pour reconstruire l'URL sans #
 	u.Fragment = ""
 	urlWithoutFragment := u.String()
 
@@ -377,55 +297,3 @@ func parseGitURL(raw string) (*GitRef, error) {
 		URL:  urlWithoutFragment,
 	}, nil
 }
-
-
-func gitCommitShort(repository_path string) (string, error) {
-    repo, err := git.PlainOpen(repository_path)
-    if err != nil {
-        return "", err
-    }
-    ref, err := repo.Head()
-    if err != nil {
-        return "", err
-    }
-    hash := ref.Hash().String()
-    return hash[:7], nil
-}
-
-
-func replacePathInModules(rootDir string, from string, to string) {
-
-	re := regexp.MustCompile(`<([^>]+)>`)
-
-	err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if d.IsDir() || filepath.Ext(path) != ".scad" {
-			return nil
-		}
-
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-
-		modified := re.ReplaceAllStringFunc(string(data), func(s string) string {
-			content := s[1 : len(s)-1] // retirer les <>
-			content = regexp.MustCompile(from).ReplaceAllString(content, to)
-			return "<" + content + ">"
-		})
-
-		if err := os.WriteFile(path, []byte(modified), 0755); err != nil {
-			return err
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		fmt.Println("Erreur :", err)
-	}
-}
-

@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/openscad-package-manager/opm/pkg/manager"
+	"github.com/Akrobate/openscad-package-manager/pkg/manager"
 	"github.com/spf13/cobra"
 )
 

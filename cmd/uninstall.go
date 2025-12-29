@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/openscad-package-manager/opm/pkg/manager"
+	"github.com/Akrobate/openscad-package-manager/pkg/manager"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +20,7 @@ Exemples:
 		if len(args) > 0 {
 			packageName = args[0]
 		}
-		
+
 		mgr, err := manager.NewManager()
 		if err != nil {
 			return fmt.Errorf("failed to initialize manager: %w", err)
@@ -33,8 +33,9 @@ Exemples:
 		}
 
 		fmt.Printf("Désinstallation de %s...\n", packageName)
-		
+
 		if err := mgr.Uninstall(packageName); err != nil {
+			fmt.Println("---------------------------")
 			return fmt.Errorf("failed to uninstall package: %w", err)
 		}
 
@@ -46,4 +47,3 @@ Exemples:
 func init() {
 	rootCmd.AddCommand(uninstallCmd)
 }
-
