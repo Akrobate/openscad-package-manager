@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
@@ -28,9 +29,9 @@ type Package struct {
 	Version      string            `json:"version" yaml:"version"`
 	Description  string            `json:"description" yaml:"description"`
 	Repository   string            `json:"repository" yaml:"repository"`
-	Dependencies map[string]string `json:"dependencies" yaml:"dependencies"`
+	Dependencies map[string]string `json:"dependencies,omitempty" yaml:"dependencies"`
 	Author       string            `json:"author" yaml:"author"`
-	Commit       string
+	Commit       string            `json:"-"`
 }
 
 type GitRef struct {
@@ -65,16 +66,14 @@ func NewManager() (*Manager, error) {
  * Install Curent
  */
 func (m *Manager) InstallCurrent() error {
-	fmt.Println("Reading current " + m.packageFile)
 
 	dir, err := os.Getwd()
 	pkg, err := m.loadPackageMetadata(dir)
 
 	if err != nil {
-		fmt.Println(m.packageFile + " not found")
-		return nil
+		return fmt.Errorf(m.packageFile + " not found")
 	}
-
+	fmt.Println("here")
 	os.RemoveAll(m.localModulesFolder)
 	err = os.Mkdir(m.localModulesFolder, 0755)
 	if err != nil {
@@ -167,6 +166,13 @@ func (m *Manager) UninstallAll() error {
 }
 
 /**
+ * Init
+ */
+func (m *Manager) Init(pkg *Package) error {
+	return m.savePackageMetadata(pkg, filepath.Join(".", m.packageFile))
+}
+
+/**
  * List
  */
 func (m *Manager) List() ([]Package, error) {
@@ -248,12 +254,12 @@ func (m *Manager) downloadPackage(url string, git_ref string, destination_direct
 }
 
 func (m *Manager) savePackageMetadata(pkg *Package, filePath string) error {
-	data, err := yaml.Marshal(pkg)
+	data, err := json.MarshalIndent(pkg, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal package metadata: %w", err)
 	}
 
-	if err := os.WriteFile(filePath, data, 0644); err != nil {
+	if err = os.WriteFile(filePath, data, 0644); err != nil {
 		return fmt.Errorf("failed to write metadata file: %w", err)
 	}
 

@@ -9,13 +9,13 @@ import (
 
 var installCmd = &cobra.Command{
 	Use:   "install [package]",
-	Short: "Installer un package OpenSCAD",
-	Long: `Installe un package OpenSCAD et ses dépendances.
+	Short: "Install Openscad module",
+	Long: `Installs Openscad module and its dependecies.
 
 Exemples:
-  opm install BOSL2
-  opm install github.com/user/repo
-  opm install package@1.0.0`,
+  opm install
+  opm install
+  opm install`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var packageName string
@@ -29,8 +29,7 @@ Exemples:
 		}
 
 		if packageName == "" {
-			mgr.InstallCurrent()
-			return nil
+			return mgr.InstallCurrent()
 		}
 
 		fmt.Printf("Installation de %s...\n", packageName)
