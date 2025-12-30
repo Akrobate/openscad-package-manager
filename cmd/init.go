@@ -13,8 +13,8 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize scad.json file",
-	Long: `Initialize scad.json file.
+	Short: "Initializes scad.json file",
+	Long: `Initializes scad.json file.
 
 Exemples:
   opm init`,
@@ -44,6 +44,10 @@ Exemples:
 	},
 }
 
+func init() {
+	rootCmd.AddCommand(initCmd)
+}
+
 func askUser(promt string, defaultValue string) string {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Printf(promt + ": ")
@@ -56,8 +60,4 @@ func askUser(promt string, defaultValue string) string {
 		input = defaultValue
 	}
 	return input
-}
-
-func init() {
-	rootCmd.AddCommand(initCmd)
 }
