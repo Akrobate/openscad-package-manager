@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/url"
 	"os"
-	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -33,12 +30,6 @@ type Package struct {
 	Dependencies map[string]string `json:"dependencies,omitempty" yaml:"dependencies"`
 	Author       string            `json:"author" yaml:"author"`
 	Commit       string            `json:"-"`
-}
-
-type GitRef struct {
-	Name string
-	Ref  string // commit / tag / branch
-	URL  string
 }
 
 func NewManager() (*Manager, error) {
@@ -95,34 +86,37 @@ func (m *Manager) InstallCurrent() error {
  */
 func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, error) {
 
-	ref, err := parseGitURL(packageSpec)
+	packageName, err := utils.GetNameFromDependencySpecString(packageSpec)
+	packageRef, err := utils.GetRefFromDependencySpecString(packageSpec)
+	packageURL, err := utils.GetURLFromDependencySpecString(packageSpec)
+
 	if err != nil {
-		fmt.Println("Cannot parse url of dependency: " + ref.Name)
+		fmt.Println("Cannot parse url of dependency: " + packageName)
 	}
-	fmt.Println("Installing: " + ref.Name + " url: " + packageSpec)
+	fmt.Println("Installing: " + packageName + " url: " + packageSpec)
 
-	var finalFolderName = ref.Name
+	var finalFolderName = packageName
 
-	os.RemoveAll(filepath.Join(m.tmpDir, ref.Name))
-	m.downloadPackage(ref.URL, ref.Ref, filepath.Join(m.tmpDir, ref.Name))
-	pkg, err := m.loadPackageMetadata(filepath.Join(m.tmpDir, ref.Name))
+	os.RemoveAll(filepath.Join(m.tmpDir, packageName))
+	m.downloadPackage(packageURL, packageRef, filepath.Join(m.tmpDir, packageName))
+	pkg, err := m.loadPackageMetadata(filepath.Join(m.tmpDir, packageName))
 
 	if isSubDependecy {
-		finalFolderName = ref.Name + "#" + pkg.Commit
+		finalFolderName = packageName + "#" + pkg.Commit
 	}
 
 	_, err = os.Stat(filepath.Join(m.localModulesFolder, finalFolderName))
 	if err == nil {
-		fmt.Println(ref.Name + " Already installed")
+		fmt.Println(packageName + " Already installed")
 		return finalFolderName, nil
 	}
 
-	err = os.Rename(filepath.Join(m.tmpDir, ref.Name), filepath.Join(m.localModulesFolder, finalFolderName))
+	err = os.Rename(filepath.Join(m.tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName))
 	if err != nil {
-		fmt.Println("Cannot move file from: " + filepath.Join(m.tmpDir, ref.Name+" to: "+filepath.Join(m.localModulesFolder, finalFolderName)))
+		fmt.Println("Cannot move file from: " + filepath.Join(m.tmpDir, packageName+" to: "+filepath.Join(m.localModulesFolder, finalFolderName)))
 	}
 
-	err = os.RemoveAll(filepath.Join(m.tmpDir, ref.Name))
+	err = os.RemoveAll(filepath.Join(m.tmpDir, packageName))
 	if err != nil {
 		return "", fmt.Errorf("RemoveAll fail %w", err)
 	}
@@ -135,7 +129,7 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 		}
 		dependecyName, err := utils.GetNameFromDependencySpecString(repository_url)
 		if err != nil {
-			return "", fmt.Errorf("parseGitURL error: "+repository_url+" %w", err)
+			return "", fmt.Errorf("GetNameFromDependencySpecString error: "+repository_url+" %w", err)
 		}
 		utils.OpenscadReplaceDependienciesPathes(
 			filepath.Join(m.localModulesFolder, finalFolderName),
@@ -159,7 +153,6 @@ func (m *Manager) Uninstall(packageName string) error {
  */
 func (m *Manager) UninstallAll() error {
 	os.RemoveAll(m.localModulesFolder)
-	os.Mkdir(m.localModulesFolder, 0755)
 	return nil
 }
 
@@ -280,24 +273,4 @@ func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 	pkg.Commit = commit
 
 	return &pkg, nil
-}
-
-func parseGitURL(raw string) (*GitRef, error) {
-	u, err := url.Parse(raw)
-	if err != nil {
-		return nil, err
-	}
-
-	base := path.Base(u.Path)
-	repo := strings.TrimSuffix(base, ".git")
-	ref := strings.TrimSpace(u.Fragment)
-
-	u.Fragment = ""
-	urlWithoutFragment := u.String()
-
-	return &GitRef{
-		Name: repo,
-		Ref:  ref,
-		URL:  urlWithoutFragment,
-	}, nil
 }
