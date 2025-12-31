@@ -3,9 +3,12 @@ package utils
 import (
 	"fmt"
 	"io/fs"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 )
@@ -57,4 +60,34 @@ func GetGitHeadShortCommit(repository_path string) (string, error) {
 	}
 	hash := ref.Hash().String()
 	return hash[:7], nil
+}
+
+func GetNameFromDependencySpecString(raw string) (string, error) {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return "", err
+	}
+
+	base := path.Base(u.Path)
+	name := strings.TrimSuffix(base, ".git")
+	return name, nil
+}
+
+func GetRefFromDependencySpecString(raw string) (string, error) {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return "", err
+	}
+	ref := strings.TrimSpace(u.Fragment)
+	return ref, nil
+}
+
+func GetURLFromDependencySpecString(raw string) (string, error) {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return "", err
+	}
+	u.Fragment = ""
+	urlWithoutFragment := u.String()
+	return urlWithoutFragment, nil
 }

@@ -19,9 +19,10 @@ import (
 )
 
 type Manager struct {
-	tmpDir             string
-	localModulesFolder string
-	packageFile        string
+	tmpDir                  string
+	localModulesForlderName string
+	localModulesFolder      string
+	packageFile             string
 }
 
 type Package struct {
@@ -46,7 +47,7 @@ func NewManager() (*Manager, error) {
 		return nil, fmt.Errorf("failed to get home directory: %w", err)
 	}
 
-	var scad_modules_foldername = "openscad_modules"
+	var localModulesForlderName = "openscad_modules"
 	var packageFile = "scad.json"
 
 	tmpDir := filepath.Join(homeDir, ".opm", "tmp")
@@ -56,9 +57,10 @@ func NewManager() (*Manager, error) {
 	}
 
 	return &Manager{
-		tmpDir:             tmpDir,
-		localModulesFolder: filepath.Join(scad_modules_foldername),
-		packageFile:        packageFile,
+		tmpDir:                  tmpDir,
+		localModulesForlderName: localModulesForlderName,
+		localModulesFolder:      filepath.Join(localModulesForlderName),
+		packageFile:             packageFile,
 	}, nil
 }
 
@@ -122,26 +124,22 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 
 	err = os.RemoveAll(filepath.Join(m.tmpDir, ref.Name))
 	if err != nil {
-		fmt.Println("Erreur :", err)
+		return "", fmt.Errorf("RemoveAll fail %w", err)
 	}
 
 	for _, repository_url := range pkg.Dependencies {
 
 		package_name, err := m.Install(repository_url, true)
-
 		if err != nil {
-			fmt.Println("Install fail " + repository_url)
+			return "", fmt.Errorf("Install fail "+repository_url+" %w", err)
 		}
-
-		dependecyRef, err := parseGitURL(repository_url)
-
+		dependecyName, err := utils.GetNameFromDependencySpecString(repository_url)
 		if err != nil {
-			fmt.Println("parseGitURL " + repository_url)
+			return "", fmt.Errorf("parseGitURL error: "+repository_url+" %w", err)
 		}
-
 		utils.OpenscadReplaceDependienciesPathes(
 			filepath.Join(m.localModulesFolder, finalFolderName),
-			"openscad_modules/"+dependecyRef.Name,
+			m.localModulesForlderName+"/"+dependecyName,
 			"../"+package_name,
 		)
 	}
