@@ -66,7 +66,7 @@ func (m *Manager) InstallCurrent() error {
 	if err != nil {
 		return fmt.Errorf(m.packageFile + " not found")
 	}
-	fmt.Println("here")
+
 	os.RemoveAll(m.localModulesFolder)
 	err = os.Mkdir(m.localModulesFolder, 0755)
 	if err != nil {
@@ -271,6 +271,21 @@ func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 
 	commit, _ := utils.GetGitHeadShortCommit(filePath)
 	pkg.Commit = commit
+
+	return &pkg, nil
+}
+
+func (m *Manager) updateDependencyInPackageFile(newDependency string) (*Package, error) {
+
+	data, err := os.ReadFile(filepath.Join(".", m.packageFile))
+	if err != nil {
+		return nil, fmt.Errorf("failed to read metadata file: %w", err)
+	}
+
+	var pkg Package
+	if err := yaml.Unmarshal(data, &pkg); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal package metadata: %w", err)
+	}
 
 	return &pkg, nil
 }
