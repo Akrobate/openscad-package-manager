@@ -286,6 +286,10 @@ func (m *Manager) updateDependencyInPackageFile(newDependency string) (*Package,
 	if err := yaml.Unmarshal(data, &pkg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal package metadata: %w", err)
 	}
+	packageName, _ := utils.GetNameFromDependencySpecString(newDependency)
+
+	pkg.Dependencies[packageName] = newDependency
+	m.savePackageMetadata(&pkg, filepath.Join(".", m.packageFile))
 
 	return &pkg, nil
 }
