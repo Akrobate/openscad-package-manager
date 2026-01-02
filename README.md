@@ -1,8 +1,8 @@
 # OpenSCAD Package Manager (opm)
 
-Un gestionnaire de paquets pour OpenSCAD écrit en Go.
+Dependencies manager for OpenSCAD wrotten in Go.
 
-## Installation
+## Install
 
 ```bash
 go build -o opm
@@ -15,23 +15,44 @@ sudo mv opm /usr/local/bin/
 go build -o opm && sudo cp opm /usr/local/bin/
 ```
 
-## Utilisation
-
-### Installer un package
+## Testing
 
 ```bash
-opm install BOSL2
-opm install package@1.0.0
-opm install github.com/user/repo
+go test ./...
 ```
 
-### Désinstaller un package
+### Coverage
 
 ```bash
-opm uninstall BOSL2
+go test -cover ./...
 ```
 
-### Lister les packages installés
+#### Generate html coverage
+
+```bash
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
+```
+
+## Usage
+
+### Install a package
+
+```bash
+opm install
+opm install https://gitlab.com/openscad-modules/housing.git
+opm install https://gitlab.com/openscad-modules/housing.git#0.0.2
+opm install https://gitlab.com/openscad-modules/housing.git#develop
+opm install https://gitlab.com/openscad-modules/housing.git#5ebc661`,
+```
+
+### Uninstall all packages
+
+```bash
+opm uninstall
+```
+
+### List installed packages
 
 ```bash
 opm list
