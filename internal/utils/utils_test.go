@@ -11,3 +11,23 @@ func TestGetNameFromDependencySpecString(t *testing.T) {
 		)
 	}
 }
+
+func TestGetRefFromDependencySpecString(t *testing.T) {
+	result, _ := GetRefFromDependencySpecString("https://gitlab.com/openscad-modules/breadboard.git#Test")
+	if result != "Test" {
+		t.Errorf(
+			"GetRefFromDependencySpecString(\"https://gitlab.com/openscad-modules/breadboard.git#Test\") = %s, attendu Test",
+			result,
+		)
+	}
+}
+
+func TestGetURLFromDependencySpecString(t *testing.T) {
+	result, _ := GetURLFromDependencySpecString("https://gitlab.com/openscad-modules/breadboard.git#Test")
+	if result != "https://gitlab.com/openscad-modules/breadboard.git" {
+		t.Errorf(
+			"GetRefFromDependencySpecString(\"https://gitlab.com/openscad-modules/breadboard.git#Test\") = %s, attendu https://gitlab.com/openscad-modules/breadboard",
+			result,
+		)
+	}
+}
