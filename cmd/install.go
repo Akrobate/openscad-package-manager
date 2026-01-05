@@ -44,6 +44,10 @@ Exemples:
 			return fmt.Errorf("failed to install package: %w", err)
 		}
 
+		if _, err := mgr.UpdateDependencyInPackageFile(packageName); err != nil {
+			return fmt.Errorf("Was not able to update package file")
+		}
+
 		fmt.Printf("✓ Package install success\n")
 		return nil
 	},

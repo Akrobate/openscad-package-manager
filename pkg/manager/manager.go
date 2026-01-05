@@ -275,7 +275,7 @@ func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 	return &pkg, nil
 }
 
-func (m *Manager) updateDependencyInPackageFile(newDependency string) (*Package, error) {
+func (m *Manager) UpdateDependencyInPackageFile(newDependency string) (*Package, error) {
 
 	data, err := os.ReadFile(filepath.Join(".", m.packageFile))
 	if err != nil {
