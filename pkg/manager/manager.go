@@ -26,9 +26,9 @@ type Package struct {
 	Name         string            `json:"name" yaml:"name"`
 	Version      string            `json:"version" yaml:"version"`
 	Description  string            `json:"description" yaml:"description"`
+	Author       string            `json:"author" yaml:"author"`
 	Repository   string            `json:"repository" yaml:"repository"`
 	Dependencies map[string]string `json:"dependencies,omitempty" yaml:"dependencies"`
-	Author       string            `json:"author" yaml:"author"`
 	Commit       string            `json:"-"`
 }
 
