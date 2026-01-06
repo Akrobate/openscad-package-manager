@@ -33,3 +33,6 @@ Thumbs.db
 dist/
 build/
 
+# Cover files
+coverage.html
+coverage.out
