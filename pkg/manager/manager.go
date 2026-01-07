@@ -68,10 +68,8 @@ func (m *Manager) InstallCurrent() error {
 	}
 
 	os.RemoveAll(m.localModulesFolder)
-	err = os.Mkdir(m.localModulesFolder, 0755)
-	if err != nil {
-		fmt.Println("Cannot create temporary folder")
-		return nil
+	if err = os.Mkdir(m.localModulesFolder, 0755); err != nil {
+		return fmt.Errorf("Cannot create local modules folder")
 	}
 
 	for _, repository_url := range pkg.Dependencies {
@@ -286,7 +284,12 @@ func (m *Manager) UpdateDependencyInPackageFile(newDependency string) (*Package,
 	if err := yaml.Unmarshal(data, &pkg); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal package metadata: %w", err)
 	}
+
 	packageName, _ := utils.GetNameFromDependencySpecString(newDependency)
+
+	if pkg.Dependencies == nil {
+		pkg.Dependencies = make(map[string]string)
+	}
 
 	pkg.Dependencies[packageName] = newDependency
 	m.savePackageMetadata(&pkg, filepath.Join(".", m.packageFile))
