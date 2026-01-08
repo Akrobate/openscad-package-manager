@@ -99,3 +99,21 @@ func TestGetGitHeadShortCommit(t *testing.T) {
 		t.Errorf("hash incorrect: got %s, want %s", hash, expected)
 	}
 }
+
+func TestDirExists(t *testing.T) {
+	tmpDir := t.TempDir()
+	fakeDirFilePath := filepath.Join(tmpDir, "FakeDir")
+
+	result := DirExists(fakeDirFilePath)
+	if result == true {
+		t.Errorf("DirExists fake dir should return false")
+	}
+
+	existingDirFilePath := filepath.Join(tmpDir, "RealDir")
+	os.Mkdir(existingDirFilePath, 755)
+
+	result = DirExists(existingDirFilePath)
+	if result == false {
+		t.Errorf("DirExists real dir should return true")
+	}
+}
