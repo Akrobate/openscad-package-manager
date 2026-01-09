@@ -19,7 +19,7 @@ type Manager struct {
 	tmpDir                  string
 	localModulesForlderName string
 	localModulesFolder      string
-	packageFile             string
+	PackageFile             string
 }
 
 type Package struct {
@@ -39,7 +39,7 @@ func NewManager() (*Manager, error) {
 	}
 
 	var localModulesForlderName = "openscad_modules"
-	var packageFile = "scad.json"
+	var PackageFile = "scad.json"
 
 	tmpDir := filepath.Join(homeDir, ".opm", "tmp")
 
@@ -51,7 +51,7 @@ func NewManager() (*Manager, error) {
 		tmpDir:                  tmpDir,
 		localModulesForlderName: localModulesForlderName,
 		localModulesFolder:      filepath.Join(localModulesForlderName),
-		packageFile:             packageFile,
+		PackageFile:             PackageFile,
 	}, nil
 }
 
@@ -64,12 +64,7 @@ func (m *Manager) InstallCurrent() error {
 	pkg, err := m.loadPackageMetadata(dir)
 
 	if err != nil {
-		return fmt.Errorf(m.packageFile + " not found")
-	}
-
-	os.RemoveAll(m.localModulesFolder)
-	if err = os.Mkdir(m.localModulesFolder, 0755); err != nil {
-		return fmt.Errorf("Cannot create local modules folder")
+		return fmt.Errorf(m.PackageFile + " not found")
 	}
 
 	for _, repository_url := range pkg.Dependencies {
@@ -103,10 +98,15 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 		finalFolderName = packageName + "#" + pkg.Commit
 	}
 
-	_, err = os.Stat(filepath.Join(m.localModulesFolder, finalFolderName))
-	if err == nil {
+	if utils.DirExists(filepath.Join(m.localModulesFolder, finalFolderName)) {
 		fmt.Println(packageName + " Already installed")
 		return finalFolderName, nil
+	}
+
+	if utils.DirExists(filepath.Join(m.localModulesFolder)) == false {
+		if err = os.Mkdir(m.localModulesFolder, 0755); err != nil {
+			return "", fmt.Errorf("Cannot create local modules folder")
+		}
 	}
 
 	err = os.Rename(filepath.Join(m.tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName))
@@ -158,7 +158,7 @@ func (m *Manager) UninstallAll() error {
  * Init
  */
 func (m *Manager) Init(pkg *Package) error {
-	return m.savePackageMetadata(pkg, filepath.Join(".", m.packageFile))
+	return m.savePackageMetadata(pkg, filepath.Join(".", m.PackageFile))
 }
 
 /**
@@ -257,7 +257,7 @@ func (m *Manager) savePackageMetadata(pkg *Package, filePath string) error {
 
 func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 
-	data, err := os.ReadFile(filepath.Join(filePath, m.packageFile))
+	data, err := os.ReadFile(filepath.Join(filePath, m.PackageFile))
 	if err != nil {
 		return nil, fmt.Errorf("failed to read metadata file: %w", err)
 	}
@@ -275,7 +275,7 @@ func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 
 func (m *Manager) UpdateDependencyInPackageFile(newDependency string) (*Package, error) {
 
-	data, err := os.ReadFile(filepath.Join(".", m.packageFile))
+	data, err := os.ReadFile(filepath.Join(".", m.PackageFile))
 	if err != nil {
 		return nil, fmt.Errorf("failed to read metadata file: %w", err)
 	}
@@ -292,7 +292,7 @@ func (m *Manager) UpdateDependencyInPackageFile(newDependency string) (*Package,
 	}
 
 	pkg.Dependencies[packageName] = newDependency
-	m.savePackageMetadata(&pkg, filepath.Join(".", m.packageFile))
+	m.savePackageMetadata(&pkg, filepath.Join(".", m.PackageFile))
 
 	return &pkg, nil
 }

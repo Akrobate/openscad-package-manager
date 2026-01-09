@@ -2,7 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
+	"github.com/Akrobate/openscad-package-manager/internal/utils"
 	"github.com/Akrobate/openscad-package-manager/pkg/manager"
 	"github.com/spf13/cobra"
 )
@@ -44,11 +47,19 @@ Exemples:
 			return fmt.Errorf("failed to install package: %w", err)
 		}
 
+		fmt.Printf("✓ Package install success\n")
+
+		dir, _ := os.Getwd()
+
+		if utils.FileExists(filepath.Join(dir, mgr.PackageFile)) == false {
+			fmt.Println("pppppppppppppppppppppppppppp")
+			return nil
+		}
+
 		if _, err := mgr.UpdateDependencyInPackageFile(packageName); err != nil {
 			return fmt.Errorf("Was not able to update package file")
 		}
 
-		fmt.Printf("✓ Package install success\n")
 		return nil
 	},
 }
