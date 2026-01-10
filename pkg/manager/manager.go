@@ -111,7 +111,7 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 	}
 
 	if err = os.Rename(filepath.Join(m.tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName)); err != nil {
-		return "", fmt.Errorf("Cannot move file from: " + filepath.Join(m.tmpDir, packageName+" to: "+filepath.Join(m.localModulesFolder, finalFolderName)))
+		return "", fmt.Errorf("Cannot move file from: %s to: %s", filepath.Join(m.tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName))
 	}
 
 	err = os.RemoveAll(filepath.Join(m.tmpDir, packageName))
@@ -123,11 +123,11 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 
 		package_name, err := m.Install(repository_url, true)
 		if err != nil {
-			return "", fmt.Errorf("Install fail "+repository_url+" %w", err)
+			return "", fmt.Errorf("Install fail %s. Error: %w", repository_url, err)
 		}
 		dependecyName, err := utils.GetNameFromDependencySpecString(repository_url)
 		if err != nil {
-			return "", fmt.Errorf("GetNameFromDependencySpecString error: "+repository_url+" %w", err)
+			return "", fmt.Errorf("GetNameFromDependencySpecString %s. Error: %w", repository_url, err)
 		}
 		utils.OpenscadReplaceDependienciesPathes(
 			filepath.Join(m.localModulesFolder, finalFolderName),
