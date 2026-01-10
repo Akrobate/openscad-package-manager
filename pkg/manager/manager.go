@@ -84,8 +84,9 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 	packageURL, err := utils.GetURLFromDependencySpecString(packageSpec)
 
 	if err != nil {
-		fmt.Println("Cannot parse url of dependency: " + packageName)
+		return "", fmt.Errorf("Cannot parse url of dependency: " + packageName)
 	}
+
 	fmt.Println("Installing: " + packageName + " url: " + packageSpec)
 
 	var finalFolderName = packageName
@@ -109,9 +110,8 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 		}
 	}
 
-	err = os.Rename(filepath.Join(m.tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName))
-	if err != nil {
-		fmt.Println("Cannot move file from: " + filepath.Join(m.tmpDir, packageName+" to: "+filepath.Join(m.localModulesFolder, finalFolderName)))
+	if err = os.Rename(filepath.Join(m.tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName)); err != nil {
+		return "", fmt.Errorf("Cannot move file from: " + filepath.Join(m.tmpDir, packageName+" to: "+filepath.Join(m.localModulesFolder, finalFolderName)))
 	}
 
 	err = os.RemoveAll(filepath.Join(m.tmpDir, packageName))

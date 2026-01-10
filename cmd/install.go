@@ -50,9 +50,7 @@ Exemples:
 		fmt.Printf("✓ Package install success\n")
 
 		dir, _ := os.Getwd()
-
 		if utils.FileExists(filepath.Join(dir, mgr.PackageFile)) == false {
-			fmt.Println("pppppppppppppppppppppppppppp")
 			return nil
 		}
 
