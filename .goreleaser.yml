@@ -1,0 +1,24 @@
+project_name: opm
+
+builds:
+  - main: ./main.go
+    goos:
+      - linux
+      - windows
+    goarch:
+      - amd64
+    binary: opm
+
+archives:
+  - format: tar.gz
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+release:
+  github:
+    owner: Akrobate
+    name: opm
