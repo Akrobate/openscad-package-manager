@@ -9,8 +9,8 @@ import (
 
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "Lister les packages installés",
-	Long:  `Affiche la liste de tous les packages OpenSCAD installés localement.`,
+	Short: "List project's installed packages",
+	Long:  `Show all project's installed packages`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mgr, err := manager.NewManager()
 		if err != nil {
@@ -23,11 +23,11 @@ var listCmd = &cobra.Command{
 		}
 
 		if len(packages) == 0 {
-			fmt.Println("Aucun package installé.")
+			fmt.Println("No packages installed")
 			return nil
 		}
 
-		fmt.Println("Packages installés:")
+		fmt.Println("Installed packages:")
 		for _, pkg := range packages {
 			fmt.Printf("  - %s#%s - %s\n", pkg.Name, pkg.Version, pkg.Commit)
 		}

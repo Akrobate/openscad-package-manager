@@ -7,10 +7,9 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "opm",
 	Short: "OpenSCAD Package Manager",
-	Long: `OpenSCAD Package Manager (opm) est un gestionnaire de paquets
-pour les bibliothèques et modules OpenSCAD.
+	Long: `OpenSCAD Package Manager (opm)
 
-Il permet d'installer, gérer et utiliser des packages OpenSCAD
+install, list, uninstall and init packages for OpenSCAD projects
 `,
 	Version: "0.1.0",
 }

@@ -44,7 +44,7 @@ Exemples:
 		fmt.Printf("Installing  %s...\n", packageName)
 
 		if _, err := mgr.Install(packageName, false); err != nil {
-			return fmt.Errorf("failed to install package: %w", err)
+			return fmt.Errorf("Failed to install package: %w", err)
 		}
 
 		fmt.Printf("✓ Package install success\n")

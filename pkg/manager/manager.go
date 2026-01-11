@@ -142,13 +142,6 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 /**
  * Uninstall
  */
-func (m *Manager) Uninstall(packageName string) error {
-	return fmt.Errorf("Unitary uninstal, not implemented, use \"opm uninstall\" instead")
-}
-
-/**
- * Uninstall
- */
 func (m *Manager) UninstallAll() error {
 	os.RemoveAll(m.localModulesFolder)
 	return nil
@@ -188,22 +181,6 @@ func (m *Manager) List() ([]Package, error) {
 	}
 
 	return packages, nil
-}
-
-/**
- * Search
- */
-func (m *Manager) Search(query string) ([]Package, error) {
-	var results []Package
-	return results, nil
-}
-
-/**
- * fetchPackageInfo
- */
-func (m *Manager) fetchPackageInfo(name, version string) (*Package, error) {
-	fmt.Println(name, version)
-	return nil, nil
 }
 
 /**

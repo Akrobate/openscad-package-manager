@@ -9,11 +9,11 @@ import (
 
 var uninstallCmd = &cobra.Command{
 	Use:   "uninstall [package]",
-	Short: "Désinstaller un package OpenSCAD",
-	Long: `Désinstalle un package OpenSCAD installé.
+	Short: "Uninstall all installed packages",
+	Long: `Uninstall all installed packages
 
 Exemples:
-  opm uninstall BOSL2`,
+  opm uninstall`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var packageName string
@@ -28,18 +28,10 @@ Exemples:
 
 		if packageName == "" {
 			mgr.UninstallAll()
-			fmt.Println("✓ Packages désinstalés avec succès")
+			fmt.Println("✓ Packages uninstall succes")
 			return nil
 		}
 
-		fmt.Printf("Désinstallation de %s...\n", packageName)
-
-		if err := mgr.Uninstall(packageName); err != nil {
-			fmt.Println("---------------------------")
-			return fmt.Errorf("failed to uninstall package: %w", err)
-		}
-
-		fmt.Printf("✓ Package %s désinstallé avec succès\n", packageName)
 		return nil
 	},
 }
