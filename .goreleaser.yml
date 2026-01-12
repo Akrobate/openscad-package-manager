@@ -21,4 +21,4 @@ checksum:
 release:
   github:
     owner: Akrobate
-    name: opm
+    name: openscad-package-manager
