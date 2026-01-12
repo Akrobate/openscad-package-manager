@@ -10,7 +10,7 @@ builds:
     binary: opm
 
 archives:
-  - format: tar.gz
+  - formats: [ 'tar.gz' ]
     files:
       - LICENSE
       - README.md
