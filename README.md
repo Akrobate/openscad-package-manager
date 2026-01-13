@@ -1,13 +1,25 @@
 # OpenSCAD Package Manager (opm)
 
-Dependencies manager for OpenSCAD wrotten in Go.
+Openscad dependencies manager wrotten in Go.
 
-## Install
+## Download and install
 
-```bash
-go build -o opm
+### Linux
+
+```shell
+curl -L -O https://github.com/Akrobate/openscad-package-manager/releases/download/0.0.2/opm_0.0.2_linux_amd64.tar.gz
+tar xvf opm_0.0.2_linux_amd64.tar.gz
 sudo mv opm /usr/local/bin/
 ```
+
+### Windows
+
+Download
+`https://github.com/Akrobate/openscad-package-manager/releases/download/0.0.2/opm_0.0.2_windows_amd64.tar.gz`
+
+Extract
+`opm_0.0.2_windows_amd64.tar.gz`
+
 
 ## Usage
 
@@ -45,10 +57,16 @@ opm list
 
 - Go 1.21 or newer
 
-### Compilation
+### Build
 
 ```bash
 go build -o opm
+```
+
+### Build and add to bin
+```bash
+go build -o opm
+sudo mv opm /usr/local/bin/
 ```
 
 ### Developping
