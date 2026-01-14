@@ -1,5 +1,8 @@
 # OpenSCAD Package Manager (opm)
 
+[![CI](https://github.com/Akrobate/openscad-package-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/Akrobate/openscad-package-manager/actions/workflows/ci.yml)
+
+
 Openscad dependencies manager wrotten in Go.
 
 ## Download and install
