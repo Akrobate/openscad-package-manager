@@ -1,6 +1,7 @@
 # OpenSCAD Package Manager (opm)
 
-[![CI](https://github.com/Akrobate/openscad-package-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/Akrobate/openscad-package-manager/actions/workflows/ci.yml)
+[![CI](https://github.com/Akrobate/openscad-package-manager/actions/workflows/tests.yml/badge.svg)](https://github.com/Akrobate/openscad-package-manager/actions/workflows/tests.yml)
+[![Build](https://github.com/Akrobate/openscad-package-manager/actions/workflows/release.yml/badge.svg)](https://github.com/Akrobate/openscad-package-manager/actions/workflows/release.yml)
 
 
 Openscad dependencies manager wrotten in Go.
