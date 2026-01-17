@@ -11,8 +11,9 @@ var repositoryListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Show repository list",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		repository.List()
-		fmt.Println("========================")
+		repositoryMgr, _ := repository.NewRepositoryManager()
+		repositoryMgr.List()
+		fmt.Println("======== List List================")
 		return nil
 	},
 }

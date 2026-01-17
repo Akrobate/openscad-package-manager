@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io/fs"
 	"net/url"
@@ -112,4 +114,9 @@ func FileExists(path string) bool {
 		return false
 	}
 	return true
+}
+
+func URLToFilenameHash(u string) string {
+	sum := sha256.Sum256([]byte(u))
+	return hex.EncodeToString(sum[:])
 }

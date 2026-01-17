@@ -55,6 +55,13 @@ opm uninstall
 opm list
 ```
 
+### Package repository source list
+
+```
+https://raw.githubusercontent.com/Akrobate/openscad-package-manager/refs/heads/master/data/sources-list/akrobate.source-list.json
+```
+
+
 ## Développement
 
 ### Requirements
