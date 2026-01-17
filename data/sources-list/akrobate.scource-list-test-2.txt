@@ -1,0 +1,5 @@
+https://gitlab.com/openscad-modules/he14.git
+https://gitlab.com/openscad-modules/housing.git
+https://gitlab.com/openscad-modules/lcd.git
+https://gitlab.com/openscad-modules/max98357.git
+https://gitlab.com/openscad-modules/speaker.git
