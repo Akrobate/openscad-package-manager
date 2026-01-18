@@ -77,17 +77,12 @@ func (m *RepositoryManager) Add(repositorySourcesUrl string) error {
 	}
 	defer f.Close()
 
-	fmt.Println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
 	contentBytes, err := io.ReadAll(f)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	contentString := string(contentBytes)
-	fmt.Println(contentString)
 	repositorySourcesListFileLines := strings.Split(contentString, "\n")
-
-	fmt.Println(repositorySourcesListFileLines)
-	fmt.Println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
 
 	for _, v := range repositorySourcesListFileLines {
 		if v == repositorySourcesUrl {
@@ -109,7 +104,7 @@ func (m *RepositoryManager) Add(repositorySourcesUrl string) error {
 
 	jsonBytes, err := json.MarshalIndent(modules, "", "    ")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	cacheFileName := utils.URLToFilenameHash(repositorySourcesUrl)
@@ -144,4 +139,14 @@ func (m *RepositoryManager) getSourceList(url string) (string, error) {
 	}
 
 	return string(body), nil
+}
+
+/**
+ * getSourceList
+ */
+func (m *RepositoryManager) Search(url string) ([]PackageItem, error) {
+
+	var result []PackageItem
+
+	return result, nil
 }
