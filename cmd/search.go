@@ -27,7 +27,9 @@ var searchCmd = &cobra.Command{
 			return fmt.Errorf("Failed to search package: %w", err)
 		}
 
-		fmt.Println(foundPackageList)
+		for _, foundPackage := range foundPackageList {
+			fmt.Printf("%s\t%s\n", foundPackage.Name, foundPackage.Repository)
+		}
 
 		return nil
 	},

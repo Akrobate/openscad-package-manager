@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Akrobate/openscad-package-manager/internal/utils"
+	"gopkg.in/yaml.v3"
 )
 
 type PackageItem struct {
@@ -144,9 +145,42 @@ func (m *RepositoryManager) getSourceList(url string) (string, error) {
 /**
  * getSourceList
  */
-func (m *RepositoryManager) Search(url string) ([]PackageItem, error) {
+func (m *RepositoryManager) Search(searchString string) ([]PackageItem, error) {
+
+	entries, err := os.ReadDir(m.repositorySourcesCache)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal package metadata: %w", err)
+	}
 
 	var result []PackageItem
 
+	for _, entry := range entries {
+		data, err := os.ReadFile(filepath.Join(m.repositorySourcesCache, entry.Name()))
+		if err != nil {
+			return nil, fmt.Errorf("failed to read cache file: %w", err)
+		}
+
+		var tmpResultList []PackageItem
+		if err := yaml.Unmarshal(data, &tmpResultList); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal package metadata: %w", err)
+		}
+
+		for _, tmpResult := range tmpResultList {
+			if checkPackageItemInArray(result, tmpResult) == false && strings.Contains(tmpResult.Name, searchString) {
+				result = append(result, tmpResult)
+			}
+		}
+	}
+
 	return result, nil
+}
+
+func checkPackageItemInArray(packageItemList []PackageItem, packageItem PackageItem) bool {
+
+	for _, tmpPackageItem := range packageItemList {
+		if tmpPackageItem.Name == packageItem.Name && tmpPackageItem.Repository == packageItem.Repository {
+			return true
+		}
+	}
+	return false
 }
