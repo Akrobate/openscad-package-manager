@@ -120,3 +120,12 @@ func URLToFilenameHash(u string) string {
 	sum := sha256.Sum256([]byte(u))
 	return hex.EncodeToString(sum[:])
 }
+
+func TempDir() (string, func(), error) {
+	dir, err := os.MkdirTemp("", "tmp_*")
+	if err != nil {
+		return "", nil, err
+	}
+	cleanup := func() { os.RemoveAll(dir) }
+	return dir, cleanup, nil
+}

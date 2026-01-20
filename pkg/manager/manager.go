@@ -273,3 +273,15 @@ func (m *Manager) UpdateDependencyInPackageFile(newDependency string) (*Package,
 
 	return &pkg, nil
 }
+
+func (m *Manager) Info(url string) error {
+
+	dir, cleanup, _ := utils.TempDir()
+
+	defer cleanup()
+
+	fmt.Println("Dossier temporaire :", dir)
+	fmt.Println("URL for info url :", url)
+
+	return nil
+}
