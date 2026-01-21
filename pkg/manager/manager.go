@@ -278,10 +278,20 @@ func (m *Manager) Info(url string) error {
 
 	dir, cleanup, _ := utils.TempDir()
 
-	defer cleanup()
+	if err := m.downloadPackage(url, "", dir); err != nil {
+		return fmt.Errorf("Info %w", err)
+	}
 
+	commit, _ := utils.GetGitHeadShortCommit(dir)
+
+	fmt.Println("Last commit :", commit)
 	fmt.Println("Dossier temporaire :", dir)
 	fmt.Println("URL for info url :", url)
+	fmt.Println("====================================")
 
+	utils.GetGitTags(dir)
+
+	fmt.Println("====================================")
+	defer cleanup()
 	return nil
 }

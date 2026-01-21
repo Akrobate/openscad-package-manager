@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 )
 
 func OpenscadReplaceDependienciesPathes(rootDir string, from string, to string) {
@@ -62,6 +63,27 @@ func GetGitHeadShortCommit(repository_path string) (string, error) {
 	}
 	hash := ref.Hash().String()
 	return hash[:7], nil
+}
+
+func GetGitTags(repository_path string) (string, error) {
+	repo, err := git.PlainOpen(repository_path)
+	if err != nil {
+		return "", err
+	}
+	tags, err := repo.Tags()
+	if err != nil {
+		return "", err
+	}
+
+	err = tags.ForEach(func(ref *plumbing.Reference) error {
+		fmt.Println(ref.Name().Short())
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+	return "", err
 }
 
 func GetNameFromDependencySpecString(raw string) (string, error) {
