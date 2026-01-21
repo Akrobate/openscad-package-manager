@@ -113,10 +113,14 @@ go tool cover -html=coverage.out
 - `internal/utils`: Commons functions
 - `main.go`: Entry point
 
-## Roadmap
+## Roadmap @todo
 
+- [ ] Normalize tmp folder when installing package
+- [ ] Do not create tmp folder in .opm on init manager
+- [ ] Info command normalize output (tag + full specification url)
+- [ ] Info Read module's package scad.json file
 - [ ] Documentation Jekyl
-- [ ] Build CI to build packages on tags
+- [x] Build CI to build packages on tags
 
 ## Licence
 
