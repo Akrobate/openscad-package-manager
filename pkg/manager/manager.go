@@ -284,14 +284,15 @@ func (m *Manager) Info(url string) error {
 
 	commit, _ := utils.GetGitHeadShortCommit(dir)
 
-	fmt.Println("Last commit :", commit)
-	fmt.Println("Dossier temporaire :", dir)
-	fmt.Println("URL for info url :", url)
-	fmt.Println("====================================")
+	fmt.Printf("Latest commit: %s\n", commit)
+	tags, _ := utils.GetGitTags(dir)
 
-	utils.GetGitTags(dir)
+	for _, tag := range tags {
+		fmt.Printf("%s\t %s#%s\n", tag, url, tag)
+	}
 
-	fmt.Println("====================================")
+	fmt.Printf("%s\t %s#%s\n", commit, url, commit)
+
 	defer cleanup()
 	return nil
 }

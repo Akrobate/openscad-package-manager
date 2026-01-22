@@ -65,25 +65,25 @@ func GetGitHeadShortCommit(repository_path string) (string, error) {
 	return hash[:7], nil
 }
 
-func GetGitTags(repository_path string) (string, error) {
+func GetGitTags(repository_path string) ([]string, error) {
 	repo, err := git.PlainOpen(repository_path)
 	if err != nil {
-		return "", err
-	}
-	tags, err := repo.Tags()
-	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	err = tags.ForEach(func(ref *plumbing.Reference) error {
-		fmt.Println(ref.Name().Short())
+	var result []string
+
+	tags, err := repo.Tags()
+	if err != nil {
+		return nil, err
+	}
+
+	tags.ForEach(func(ref *plumbing.Reference) error {
+		result = append(result, ref.Name().Short())
 		return nil
 	})
 
-	if err != nil {
-		return "", err
-	}
-	return "", err
+	return result, err
 }
 
 func GetNameFromDependencySpecString(raw string) (string, error) {
