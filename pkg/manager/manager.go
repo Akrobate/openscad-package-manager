@@ -16,7 +16,6 @@ import (
 )
 
 type Manager struct {
-	tmpDir                  string
 	localModulesForlderName string
 	localModulesFolder      string
 	PackageFile             string
@@ -33,22 +32,11 @@ type Package struct {
 }
 
 func NewManager() (*Manager, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get home directory: %w", err)
-	}
 
 	var localModulesForlderName = "openscad_modules"
 	var PackageFile = "scad.json"
 
-	tmpDir := filepath.Join(homeDir, ".opm", "tmp")
-
-	if err := os.MkdirAll(tmpDir, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create cache directory: %w", err)
-	}
-
 	return &Manager{
-		tmpDir:                  tmpDir,
 		localModulesForlderName: localModulesForlderName,
 		localModulesFolder:      filepath.Join(localModulesForlderName),
 		PackageFile:             PackageFile,
@@ -91,9 +79,11 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 
 	var finalFolderName = packageName
 
-	os.RemoveAll(filepath.Join(m.tmpDir, packageName))
-	m.downloadPackage(packageURL, packageRef, filepath.Join(m.tmpDir, packageName))
-	pkg, err := m.loadPackageMetadata(filepath.Join(m.tmpDir, packageName))
+	tmpDir, cleanup, _ := utils.TempDir()
+
+	os.RemoveAll(filepath.Join(tmpDir, packageName))
+	m.downloadPackage(packageURL, packageRef, filepath.Join(tmpDir, packageName))
+	pkg, err := m.loadPackageMetadata(filepath.Join(tmpDir, packageName))
 
 	if isSubDependecy {
 		finalFolderName = packageName + "#" + pkg.Commit
@@ -110,11 +100,13 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 		}
 	}
 
-	if err = os.Rename(filepath.Join(m.tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName)); err != nil {
-		return "", fmt.Errorf("Cannot move file from: %s to: %s", filepath.Join(m.tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName))
+	if err = os.Rename(filepath.Join(tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName)); err != nil {
+		return "", fmt.Errorf("Cannot move file from: %s to: %s", filepath.Join(tmpDir, packageName), filepath.Join(m.localModulesFolder, finalFolderName))
 	}
 
-	err = os.RemoveAll(filepath.Join(m.tmpDir, packageName))
+	err = os.RemoveAll(filepath.Join(tmpDir, packageName))
+	defer cleanup()
+
 	if err != nil {
 		return "", fmt.Errorf("RemoveAll fail %w", err)
 	}

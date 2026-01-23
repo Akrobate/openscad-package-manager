@@ -144,7 +144,7 @@ func URLToFilenameHash(u string) string {
 }
 
 func TempDir() (string, func(), error) {
-	dir, err := os.MkdirTemp("", "tmp_*")
+	dir, err := os.MkdirTemp("", "tmp_opm_*")
 	if err != nil {
 		return "", nil, err
 	}

@@ -115,11 +115,11 @@ go tool cover -html=coverage.out
 
 ## Roadmap @todo
 
-- [ ] Normalize tmp folder when installing package
-- [ ] Do not create tmp folder in .opm on init manager
-- [x] Info command normalize output (tag + full specification url)
 - [ ] Info Read module's package scad.json file
 - [ ] Documentation Jekyl
+- [x] Normalize tmp folder when installing package
+- [x] Do not create tmp folder in .opm on init manager
+- [x] Info command normalize output (tag + full specification url)
 - [x] Build CI to build packages on tags
 
 ## Licence
