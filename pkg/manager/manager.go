@@ -274,11 +274,16 @@ func (m *Manager) Info(url string) error {
 		return fmt.Errorf("Info %w", err)
 	}
 
+	pkg, _ := m.loadPackageMetadata(dir)
+
+	fmt.Printf("Name: %s\n", pkg.Name)
+	fmt.Printf("Descrition: %s\n", pkg.Description)
+
 	commit, _ := utils.GetGitHeadShortCommit(dir)
-
 	fmt.Printf("Latest commit: %s\n", commit)
-	tags, _ := utils.GetGitTags(dir)
 
+	tags, _ := utils.GetGitTags(dir)
+	fmt.Printf("Versions:\n")
 	for _, tag := range tags {
 		fmt.Printf("%s\t %s#%s\n", tag, url, tag)
 	}
