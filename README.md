@@ -55,11 +55,33 @@ opm uninstall
 opm list
 ```
 
+### Info about a package
+
+```shell
+opm info https://gitlab.com/openscad-modules/housing.git
+```
+
+```
+Name: housing
+Descrition: housing libraries helper
+Latest commit: 5d18bef
+Versions:
+0.0.1	 https://gitlab.com/openscad-modules/housing.git#0.0.1
+0.0.2	 https://gitlab.com/openscad-modules/housing.git#0.0.2
+0.0.3	 https://gitlab.com/openscad-modules/housing.git#0.0.3
+0.0.4	 https://gitlab.com/openscad-modules/housing.git#0.0.4
+5d18bef	 https://gitlab.com/openscad-modules/housing.git#5d18bef
+```
+
+
+
+
 ### Package repository source list
 
 ```
 https://raw.githubusercontent.com/Akrobate/openscad-package-manager/refs/heads/master/data/sources-list/akrobate.source-list.json
 ```
+
 
 
 ## Développement
