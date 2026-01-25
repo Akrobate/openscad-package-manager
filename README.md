@@ -123,8 +123,9 @@ go test -cover ./...
 ##### Generate html coverage
 
 ```bash
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
+go test -coverprofile=coverage.out -coverpkg=./... ./...
+go tool cover -html=coverage.out -o coverage.html
+
 ```
 
 

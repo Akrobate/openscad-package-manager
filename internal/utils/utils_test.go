@@ -117,3 +117,26 @@ func TestDirExists(t *testing.T) {
 		t.Errorf("DirExists real dir should return true")
 	}
 }
+
+func TestFileExists(t *testing.T) {
+	dir := t.TempDir() // crée un dossier temporaire
+
+	txtFile := filepath.Join(dir, "b.txt")
+	os.WriteFile(txtFile, []byte("ne pas toucher"), 0644)
+
+	if FileExists(txtFile) == false {
+		t.Errorf("File created FileExists should return true")
+	}
+
+	notExistingTxtFile := filepath.Join(dir, "c.txt")
+	if FileExists(notExistingTxtFile) == true {
+		t.Errorf("File not existing FileExists should return false")
+	}
+}
+
+func TestURLToFilenameHash(t *testing.T) {
+	hashedString := URLToFilenameHash("StringToHash")
+	if hashedString != "a1af46c3980254cd987b671e0d3c79a656fedb1451ae95cf832561f6e58479bf" {
+		t.Errorf("URLToFilenameHash hash is not correct")
+	}
+}
