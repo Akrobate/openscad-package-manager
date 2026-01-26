@@ -1,0 +1,6 @@
+site_name: OpenSCAD Package Manager
+repo_url: https://github.com/Akrobate/openscad-package-manager
+
+theme:
+  name: readthedocs
+  language: fr
