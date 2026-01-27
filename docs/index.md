@@ -1,17 +1,15 @@
-# Welcome to MkDocs
+# Openscad Package Manager (opm)
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+## 📌 Introduction
 
-## Commands
+OpenSCAD Package Manager (opm) is a package manager for OpenSCAD that allows you to install, update, and manage OpenSCAD modules and dependencies from Git repositories.
+It aims to simplify the integration of third-party libraries into your OpenSCAD projects.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
 
-## Project layout
+## ✨ Features
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+- Initialize an OpenSCAD project with a configuration file
+- Install packages from Git repositories (URL, branch, or version)
+- List installed packages
+- Uninstall one or all packages
+- Display information about a package

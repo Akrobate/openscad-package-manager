@@ -136,6 +136,30 @@ go tool cover -html=coverage.out -o coverage.html
 - `internal/utils`: Commons functions
 - `main.go`: Entry point
 
+
+## Generating local documentation
+
+### Install venv
+
+```shell
+python3 -m virtualenv venv
+source venv/bin/activate
+```
+
+### Install requirements
+
+```shell
+pip install mkdocs
+pip install mkdocs-material
+```
+
+### Serve documentation local
+
+```shell
+mkdocs serve
+```
+
+
 ## Roadmap @todo
 
 - [x] Info Read module's package scad.json file

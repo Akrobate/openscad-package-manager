@@ -4,3 +4,8 @@ repo_url: https://github.com/Akrobate/openscad-package-manager
 theme:
   name: readthedocs
   language: fr
+
+nav:
+  - OpenScad Package Manager (opm): index.md
+  - Quick Start: quick-start.md
+  - Download and install: download-and-install-opm.md
