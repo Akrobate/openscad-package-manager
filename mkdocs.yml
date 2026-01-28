@@ -4,8 +4,13 @@ repo_url: https://github.com/Akrobate/openscad-package-manager
 theme:
   name: readthedocs
   language: fr
+  custom_dir: docs/overrides
+  repo_url: https://github.com/Akrobate/openscad-package-manager
+
 
 nav:
   - OpenScad Package Manager (opm): index.md
   - Quick Start: quick-start.md
   - Download and install: download-and-install-opm.md
+  - Usage: usage.md
+

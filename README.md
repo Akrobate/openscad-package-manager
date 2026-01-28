@@ -156,7 +156,7 @@ pip install mkdocs-material
 ### Serve documentation local
 
 ```shell
-mkdocs serve
+mkdocs serve --livereload
 ```
 
 
@@ -168,6 +168,10 @@ mkdocs serve
 - [x] Do not create tmp folder in .opm on init manager
 - [x] Info command normalize output (tag + full specification url)
 - [x] Build CI to build packages on tags
+
+## Bug fix
+
+- [ ] Able to install a dependency of inexisting tag. Should not be possible
 
 ## Licence
 
