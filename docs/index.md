@@ -1,3 +1,9 @@
+
+
+<div style="text-align:center">
+    <img src="assets/logo-openscad-package-manager-opm-min.png" width="50%" alt="OpenSCAD Package manager Logo"  />
+</div>
+
 # Openscad Package Manager (opm)
 
 ## 📌 Introduction

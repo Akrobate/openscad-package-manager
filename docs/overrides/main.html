@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+    <link rel="shortcut icon" href="{{ base_url }}/assets/logo.ico" type="image/x-icon" />
+{% endblock %}
+
 {# Remove Edit on GitHub button #}
 {% block header_buttons %}
 {# intentionally empty #}
