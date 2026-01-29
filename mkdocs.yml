@@ -12,8 +12,9 @@ theme:
 
 
 nav:
-  - OpenScad Package Manager (opm): index.md
+  - About opm: index.md
   - Quick Start: quick-start.md
   - Download and install: download-and-install-opm.md
+  - Packages: openscad-packages.md
   - Usage: usage.md
 

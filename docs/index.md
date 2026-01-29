@@ -14,8 +14,9 @@ It aims to simplify the integration of third-party libraries into your OpenSCAD 
 
 ## ✨ Features
 
-- Initialize an OpenSCAD project with a configuration file
-- Install packages from Git repositories (URL, branch, or version)
+- Initialize an OpenSCAD project
+- Install packages
 - List installed packages
-- Uninstall one or all packages
+- Uninstall packages
 - Display information about a package
+- Manage package repositories

@@ -4,9 +4,11 @@ After installation, you can start managing your OpenSCAD dependencies.
 
 ## 🛠 Initialize a project
 
+```shell
 opm init
+```
 
-This creates a configuration file (for example opm.json) in the current directory.
+This creates a configuration file (for example scad.json) in the current directory
 
 ## 📋 Available Commands
 
@@ -19,7 +21,7 @@ Command	Description
 - `opm list`	List installed packages
 - `opm info <URL>`	Display information about a package
 
-## 🔍 Examples
+## 🔍 Commands examples
 
 Install a module
 
