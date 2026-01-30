@@ -2,7 +2,7 @@ site_name: OpenSCAD Package Manager
 repo_url: https://github.com/Akrobate/openscad-package-manager
 logo: assets/logo-openscad-package-manager-opm.png
 site_favicon: favicon.png
-site_url: https://github.com/Akrobate/openscad-package-manager
+site_url: https://akrobate.github.io/openscad-package-manager
 
 
 theme:
