@@ -150,6 +150,7 @@ source venv/bin/activate
 
 ```shell
 pip install mkdocs
+pip install mkdocs-sitemap
 pip install mkdocs-material
 ```
 
