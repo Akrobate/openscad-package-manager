@@ -3,22 +3,27 @@ repo_url: https://github.com/Akrobate/openscad-package-manager
 logo: assets/logo-openscad-package-manager-opm.png
 site_favicon: favicon.png
 site_url: https://akrobate.github.io/openscad-package-manager
-
+keywords: OpenSCAD, OpenSCAD Package Manager, OPM, OpenSCAD modules, OpenSCAD libraries, OpenSCAD packages, manage OpenSCAD dependencies, install OpenSCAD packages, update OpenSCAD modules, OpenSCAD library manager, Go OpenSCAD package manager, scad.json, OpenSCAD dependency resolution, versioned OpenSCAD packages, Git-based OpenSCAD packages
+site_description: OpenSCAD Package Manager (OPM) is a Go-based tool to easily install, update, and manage OpenSCAD modules and dependencies from Git repositories, simplifying integration of third-party libraries into your OpenSCAD projects.
 
 theme:
   name: readthedocs
-  language: fr
+  language: en
   custom_dir: docs/overrides
   repo_url: https://github.com/Akrobate/openscad-package-manager
 
 
 nav:
-  - About opm: index.md
-  - Quick Start: quick-start.md
-  - Download and install: download-and-install-opm.md
-  - Packages: openscad-packages.md
-  - Usage: usage.md
+  - OpenSCAD Package Manager: index.md
+  - Getting Started with OPM: quick-start.md
+  - Install OpenSCAD Package Manager: download-and-install-opm.md
+  - OpenSCAD Packages: openscad-packages.md
+  - How to Use OPM: usage.md
 
 extra:
   extra_files:
     - robots.txt
+
+markdown_extensions:
+  - meta
+
