@@ -1,3 +1,10 @@
+---
+title: Download and Install OpenSCAD Package Manager (OPM) on Linux and Windows
+description: Learn how to download and install OpenSCAD Package Manager (OPM) on Linux (Ubuntu) and Windows. Step-by-step installation guide with commands and setup instructions.
+keywords: OpenSCAD, OpenSCAD Package Manager, OPM, install OpenSCAD Package Manager, download OPM, OpenSCAD install Ubuntu, OpenSCAD package manager Linux, OpenSCAD package manager Windows
+image: assets/logo-openscad-package-manager-opm-min.png
+---
+
 # 📥 Download and Installation
 
 ## Linux (ubuntu)

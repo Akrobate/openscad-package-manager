@@ -1,34 +1,36 @@
 {% extends "base.html" %}
 
-  {%- block site_meta %}
+{%- block site_meta %}
 
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    {%- if page and page.is_homepage %}
-    <meta name="description" content="{{ config.site_description }}" />
-    {%- elif page %}
-    <meta name="description" content="{{ page.meta.description }}" />
-    {%- endif %}
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  {%- if page and page.is_homepage %}
+  <meta name="description" content="{{ config.site_description }}" />
+  {%- elif page %}
+  <meta name="description" content="{{ page.meta.description }}" />
+  {%- endif %}
 
-    {%- if page and page.is_homepage %}
-    <meta name="keywords" content="{{ config.keywords }}" />
-    {%- elif page %}
-    <meta name="keywords" content="{{ page.meta.keywords }}" />
-    {%- endif %}
+  {%- if page and page.is_homepage %}
+  <meta name="keywords" content="{{ config.keywords }}" />
+  {%- elif page %}
+  <meta name="keywords" content="{{ page.meta.keywords }}" />
+  {%- endif %}
+
+  {%- if config.site_author %}<meta name="author" content="{{ config.site_author }}" />{%- endif %}
+  {%- if page and page.canonical_url %}<link rel="canonical" href="{{ page.canonical_url }}" />{%- endif %}
+
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{% if page and page.title and not page.is_homepage %}{{ page.title }} - {% endif %}{{ config.site_name }}">
+
+  <link rel="shortcut icon" href="{{ config.site_favicon|url }}" />
+{%- endblock %}
 
 
-
-    {%- if config.site_author %}<meta name="author" content="{{ config.site_author }}" />{%- endif %}
-    {%- if page and page.canonical_url %}<link rel="canonical" href="{{ page.canonical_url }}" />{%- endif %}
-
-    <meta property="og:site_name" content="{{ config.site_name }}">
-    <meta property="og:title" content="{% if page and page.title and not page.is_homepage %}{{ page.title }} - {% endif %}{{ config.site_name }}">
-
-    <link rel="shortcut icon" href="{{ config.site_favicon|url }}" />
-  {%- endblock %}
-
+{%- block htmltitle %}
+  <title>{% if page and page.title and not page.is_homepage %}{{ page.title }} - {% endif %}{{ config.site_name }}</title>
+{%- endblock %}
 
 
 {% block extrahead %}
