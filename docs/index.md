@@ -1,5 +1,5 @@
 ---
-title: OpenSCAD Package Manager (OPM) – Manage OpenSCAD Modules & Dependencies
+title: OpenSCAD Package Manager (OPM)
 description: OpenSCAD Package Manager (OPM) is a Go-based tool to easily install, update, and manage OpenSCAD modules and dependencies from Git repositories. Simplify integration of third-party libraries into your OpenSCAD projects.
 keywords: OpenSCAD, package manager, OPM, OpenSCAD modules, OpenSCAD libraries, dependency management, install OpenSCAD packages
 image: assets/logo-openscad-package-manager-opm-min.png

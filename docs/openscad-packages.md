@@ -1,5 +1,5 @@
 ---
-title: OpenSCAD Package Definition (scad.json) – Dependency & Module Management with OPM
+title: OpenSCAD Package Definition (scad.json)
 description: Learn how to define OpenSCAD packages using scad.json with OpenSCAD Package Manager (OPM). Manage dependencies, install modules, and maintain version control efficiently.
 keywords: OpenSCAD, package manager, OPM, scad.json, OpenSCAD modules, dependency management, OpenSCAD libraries, install OpenSCAD packages
 image: assets/logo-openscad-package-manager-opm-min.png

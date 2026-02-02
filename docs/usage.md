@@ -1,3 +1,9 @@
+---
+title: How to Use OpenSCAD Package Manager (OPM) Commands and Examples
+description: Learn how to use OpenSCAD Package Manager (OPM) to manage OpenSCAD dependencies. Initialize projects, install packages, manage versions, and explore available commands with examples.
+keywords: OpenSCAD, OpenSCAD Package Manager, OPM, OpenSCAD dependencies, OpenSCAD modules, opm commands, opm install, opm init, manage OpenSCAD packages
+---
+
 #💡 Usage
 
 After installation, you can start managing your OpenSCAD dependencies.
