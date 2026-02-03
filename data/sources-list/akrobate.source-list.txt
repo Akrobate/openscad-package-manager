@@ -2,8 +2,11 @@ https://gitlab.com/openscad-modules/battery.git
 https://gitlab.com/openscad-modules/breadboard.git
 https://gitlab.com/openscad-modules/button.git
 https://gitlab.com/openscad-modules/commons.git
+https://gitlab.com/openscad-modules/esp32cam-holder.git
 https://gitlab.com/openscad-modules/he14.git
 https://gitlab.com/openscad-modules/housing.git
 https://gitlab.com/openscad-modules/lcd.git
+https://gitlab.com/openscad-modules/led.git
 https://gitlab.com/openscad-modules/max98357.git
 https://gitlab.com/openscad-modules/speaker.git
+https://gitlab.com/openscad-modules/tp4056-holder.git

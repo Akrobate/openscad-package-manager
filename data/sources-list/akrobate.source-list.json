@@ -16,6 +16,10 @@
         "repsotiry":"https://gitlab.com/openscad-modules/commons.git"
     },
     {
+        "name":"esp32cam-holder",
+        "repsotiry":"https://gitlab.com/openscad-modules/esp32cam-holder.git"
+    },
+    {
         "name":"he14",
         "repsotiry":"https://gitlab.com/openscad-modules/he14.git"
     },
@@ -28,11 +32,19 @@
         "repsotiry":"https://gitlab.com/openscad-modules/lcd.git"
     },
     {
+        "name":"led",
+        "repsotiry":"https://gitlab.com/openscad-modules/led.git"
+    },
+    {
         "name":"max98357",
         "repsotiry":"https://gitlab.com/openscad-modules/max98357.git"
     },
     {
         "name":"speaker",
         "repsotiry":"https://gitlab.com/openscad-modules/speaker.git"
+    },
+    {
+        "name":"tp4056-holder",
+        "repsotiry":"https://gitlab.com/openscad-modules/tp4056-holder.git"
     }
 ]
