@@ -10,3 +10,4 @@ https://gitlab.com/openscad-modules/led.git
 https://gitlab.com/openscad-modules/max98357.git
 https://gitlab.com/openscad-modules/speaker.git
 https://gitlab.com/openscad-modules/tp4056-holder.git
+https://gitlab.com/Akrobate/esp-module-holder-3d-model.git

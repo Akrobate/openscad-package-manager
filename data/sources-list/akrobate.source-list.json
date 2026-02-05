@@ -46,5 +46,9 @@
     {
         "name":"tp4056-holder",
         "repsotiry":"https://gitlab.com/openscad-modules/tp4056-holder.git"
-    }
+    },
+    {
+        "name":"esp-module-holder-3d-model",
+        "repsotiry":"https://gitlab.com/Akrobate/esp-module-holder-3d-model.git"
+    }   
 ]
