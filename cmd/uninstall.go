@@ -27,7 +27,10 @@ Exemples:
 		}
 
 		if packageName == "" {
-			mgr.UninstallAll()
+			err = mgr.UninstallAll()
+			if err != nil {
+				return err
+			}
 			fmt.Println("✓ Packages uninstall succes")
 			return nil
 		}
