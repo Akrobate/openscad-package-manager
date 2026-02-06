@@ -135,6 +135,11 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
  * Uninstall
  */
 func (m *Manager) UninstallAll() error {
+	dir, err := os.Getwd()
+	_, err = m.loadPackageMetadata(dir)
+	if err != nil {
+		return fmt.Errorf("You can only uninstall from the root of a package with scad.json inside")
+	}
 	os.RemoveAll(m.localModulesFolder)
 	return nil
 }

@@ -163,8 +163,7 @@ mkdocs serve --livereload
 
 ## Roadmap @todo
 
-- [ ] opm unistall should throw an error if no scad file in current folder
-- [ ] Documentation Jekyl
+- [x] opm unistall should throw an error if no scad file in current folder
 - [x] Info Read module's package scad.json file
 - [x] Normalize tmp folder when installing package
 - [x] Do not create tmp folder in .opm on init manager
