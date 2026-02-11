@@ -6,6 +6,11 @@
 
 Openscad dependencies manager wrotten in Go.
 
+
+## Online documentation
+
+[Openscad Package Manager (opm)](https://openscad-modules.gitlab.io/openscad-package-manager-documentation/)
+
 ## Download and install
 
 ### Linux
