@@ -79,15 +79,11 @@ Versions:
 ```
 
 
-
-
 ### Package repository source list
 
 ```
 https://raw.githubusercontent.com/Akrobate/openscad-package-manager/refs/heads/master/data/sources-list/akrobate.source-list.json
 ```
-
-
 
 ## Développement
 
@@ -102,6 +98,7 @@ go build -o opm
 ```
 
 ### Build and add to bin
+
 ```bash
 go build -o opm
 sudo mv opm /usr/local/bin/
@@ -142,32 +139,10 @@ go tool cover -html=coverage.out -o coverage.html
 - `main.go`: Entry point
 
 
-## Generating local documentation
-
-### Install venv
-
-```shell
-python3 -m virtualenv venv
-source venv/bin/activate
-```
-
-### Install requirements
-
-```shell
-pip install mkdocs
-pip install mkdocs-sitemap
-pip install mkdocs-material
-```
-
-### Serve documentation local
-
-```shell
-mkdocs serve --livereload
-```
-
-
 ## Roadmap @todo
-
+- [ ] Add renderer mecanic
+    - [ ] Document anotating tags
+    - [ ] create simple command for rendering
 - [x] opm unistall should throw an error if no scad file in current folder
 - [x] Info Read module's package scad.json file
 - [x] Normalize tmp folder when installing package
