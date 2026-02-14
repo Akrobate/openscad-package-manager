@@ -140,3 +140,56 @@ func TestURLToFilenameHash(t *testing.T) {
 		t.Errorf("URLToFilenameHash hash is not correct")
 	}
 }
+
+// Fonction utilitaire pour comparer des slices de strings
+func equal(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func TestExtractTagValues(t *testing.T) {
+	code := `
+	/**
+	 * UsbChargerFacadeHolderPiece
+	 * @name UsbChargerFacadeHolderPiece
+	 * @type piece
+	 * @parent UsbChargerComponent
+	 */
+
+	/**
+	 * AnotherBlock
+	 * @type    component
+	 */
+	`
+
+	// Test @name
+	result_name := extractTagValues(code, "name")
+	expected_name := []string{"UsbChargerFacadeHolderPiece"}
+
+	if !equal(result_name, expected_name) {
+		t.Errorf("extractTagValues(code, \"name\") = %v; want %v", result_name, expected_name)
+	}
+
+	// Test @type
+	result_type := extractTagValues(code, "type")
+	expected_type := []string{"piece", "component"}
+
+	if !equal(result_type, expected_type) {
+		t.Errorf("extractTagValues(code, \"type\") = %v; want %v", result_type, expected_type)
+	}
+
+	// Test @parent
+	result_parent := extractTagValues(code, "parent")
+	expected_parent := []string{"UsbChargerComponent"}
+
+	if !equal(result_parent, expected_parent) {
+		t.Errorf("extractTagValues(code, \"parent\") = %v; want %v", result_parent, expected_parent)
+	}
+}

@@ -151,3 +151,51 @@ func TempDir() (string, func(), error) {
 	cleanup := func() { os.RemoveAll(dir) }
 	return dir, cleanup, nil
 }
+
+func FindFilesWithSpecificType(rootDir string, element_type string) ([]string, error) {
+
+	/*
+		re := regexp.MustCompile(`<([^>]+)>`)
+
+		err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if d.IsDir() || filepath.Ext(path) != ".scad" {
+				return nil
+			}
+
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		})
+	*/
+	var data []string
+	return data, nil
+
+}
+
+func extractTagValues(code string, tag string) []string {
+	var results []string
+
+	// On échappe le tag pour éviter les soucis regex
+	escapedTag := regexp.QuoteMeta(tag)
+
+	// Construction dynamique de la regex
+	pattern := fmt.Sprintf(`@%s[ \t]+([^\s*]+)[ \t]*`, escapedTag)
+	re := regexp.MustCompile(pattern)
+
+	matches := re.FindAllStringSubmatch(code, -1)
+
+	for _, m := range matches {
+		if len(m) > 1 {
+			results = append(results, m[1])
+		}
+	}
+
+	return results
+}
