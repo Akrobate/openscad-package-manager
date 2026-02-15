@@ -43,9 +43,7 @@ func NewManager() (*Manager, error) {
 	}, nil
 }
 
-/**
- * Install Curent
- */
+// InstallCurrent install the current package and its dependencies
 func (m *Manager) InstallCurrent() error {
 
 	dir, err := os.Getwd()
@@ -62,9 +60,7 @@ func (m *Manager) InstallCurrent() error {
 	return nil
 }
 
-/**
- * Install
- */
+// Install install a package and its dependencies
 func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, error) {
 
 	packageName, err := utils.GetNameFromDependencySpecString(packageSpec)
@@ -80,6 +76,7 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 	var finalFolderName = packageName
 
 	tmpDir, cleanup, _ := utils.TempDir()
+	defer cleanup()
 
 	os.RemoveAll(filepath.Join(tmpDir, packageName))
 	m.downloadPackage(packageURL, packageRef, filepath.Join(tmpDir, packageName))
@@ -105,7 +102,6 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 	}
 
 	err = os.RemoveAll(filepath.Join(tmpDir, packageName))
-	defer cleanup()
 
 	if err != nil {
 		return "", fmt.Errorf("RemoveAll fail %w", err)
@@ -131,9 +127,7 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 	return finalFolderName, nil
 }
 
-/**
- * Uninstall
- */
+// UninstallAll uninstall all installed packages
 func (m *Manager) UninstallAll() error {
 	dir, err := os.Getwd()
 	_, err = m.loadPackageMetadata(dir)
@@ -144,16 +138,12 @@ func (m *Manager) UninstallAll() error {
 	return nil
 }
 
-/**
- * Init
- */
+// Init initialize the package file
 func (m *Manager) Init(pkg *Package) error {
 	return m.savePackageMetadata(pkg, filepath.Join(".", m.PackageFile))
 }
 
-/**
- * List
- */
+// List list all installed packages
 func (m *Manager) List() ([]Package, error) {
 	entries, err := os.ReadDir(m.localModulesFolder)
 	if err != nil {
@@ -180,9 +170,7 @@ func (m *Manager) List() ([]Package, error) {
 	return packages, nil
 }
 
-/**
- * downloadPackage
- */
+// downloadPackage download a package from a URL
 func (m *Manager) downloadPackage(url string, git_ref string, destination_directory string) error {
 
 	repository, err := git.PlainClone(
@@ -195,7 +183,8 @@ func (m *Manager) downloadPackage(url string, git_ref string, destination_direct
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println("PlainClone", err)
+		return err
 	}
 
 	err = repository.Fetch(&git.FetchOptions{
@@ -216,6 +205,7 @@ func (m *Manager) downloadPackage(url string, git_ref string, destination_direct
 	return nil
 }
 
+// savePackageMetadata save the package metadata to a file
 func (m *Manager) savePackageMetadata(pkg *Package, filePath string) error {
 	data, err := json.MarshalIndent(pkg, "", "  ")
 	if err != nil {
@@ -229,6 +219,7 @@ func (m *Manager) savePackageMetadata(pkg *Package, filePath string) error {
 	return nil
 }
 
+// loadPackageMetadata load the package metadata from a file
 func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 
 	data, err := os.ReadFile(filepath.Join(filePath, m.PackageFile))
@@ -247,6 +238,7 @@ func (m *Manager) loadPackageMetadata(filePath string) (*Package, error) {
 	return &pkg, nil
 }
 
+// UpdateDependencyInPackageFile update the dependency in the package file
 func (m *Manager) UpdateDependencyInPackageFile(newDependency string) (*Package, error) {
 
 	data, err := os.ReadFile(filepath.Join(".", m.PackageFile))
@@ -271,9 +263,11 @@ func (m *Manager) UpdateDependencyInPackageFile(newDependency string) (*Package,
 	return &pkg, nil
 }
 
+// Info get information about a package
 func (m *Manager) Info(url string) error {
 
 	dir, cleanup, _ := utils.TempDir()
+	defer cleanup()
 
 	if err := m.downloadPackage(url, "", dir); err != nil {
 		return fmt.Errorf("Info %w", err)
@@ -295,6 +289,5 @@ func (m *Manager) Info(url string) error {
 
 	fmt.Printf("%s\t %s#%s\n", commit, url, commit)
 
-	defer cleanup()
 	return nil
 }

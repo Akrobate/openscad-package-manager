@@ -13,8 +13,11 @@ var repositoryAddCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		sourceList := args[0]
-		repositoryMgr, _ := repository.NewRepositoryManager()
-		err := repositoryMgr.Add(sourceList)
+		repositoryMgr, err := repository.NewRepositoryManager()
+		if err != nil {
+			return fmt.Errorf("failed to initialize repository manager: %w", err)
+		}
+		err = repositoryMgr.Add(sourceList)
 		if err != nil {
 			return fmt.Errorf("Failed to add repository list: %w", err)
 		}

@@ -33,6 +33,9 @@ Exemples:
 			}
 			fmt.Println("✓ Packages uninstall succes")
 			return nil
+		} else {
+			fmt.Println("Uninstall a specific package is not implemented")
+			return nil
 		}
 
 		return nil

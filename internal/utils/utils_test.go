@@ -142,7 +142,7 @@ func TestURLToFilenameHash(t *testing.T) {
 }
 
 // Fonction utilitaire pour comparer des slices de strings
-func equal(a, b []string) bool {
+func equal(a []string, b []string) bool {
 	if len(a) != len(b) {
 		return false
 	}
