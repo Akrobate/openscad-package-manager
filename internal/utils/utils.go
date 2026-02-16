@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"slices"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -152,40 +153,45 @@ func TempDir() (string, func(), error) {
 	return dir, cleanup, nil
 }
 
+// FindFilesWithSpecificType find all files with a specific type
 func FindFilesWithSpecificType(rootDir string, element_type string) ([]string, error) {
 
-	/*
-		re := regexp.MustCompile(`<([^>]+)>`)
+	var results []string
 
-		err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-			if err != nil {
-				return err
-			}
+	err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
 
-			if d.IsDir() || filepath.Ext(path) != ".scad" {
-				return nil
-			}
+		if d.IsDir() && d.Name() == "openscad_modules" {
+			return filepath.SkipDir
+		}
 
-			data, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-
+		if d.IsDir() || filepath.Ext(path) != ".scad" {
 			return nil
-		})
-	*/
-	var data []string
-	return data, nil
+		}
 
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		matches := extractTagValues(string(data), "type")
+		if slices.Contains(matches, element_type) {
+			results = append(results, path)
+		}
+		return nil
+	})
+
+	return results, err
 }
 
+// extractTagValues extract all values of a specific tag
 func extractTagValues(code string, tag string) []string {
 	var results []string
 
-	// On échappe le tag pour éviter les soucis regex
 	escapedTag := regexp.QuoteMeta(tag)
 
-	// Construction dynamique de la regex
 	pattern := fmt.Sprintf(`@%s[ \t]+([^\s*]+)[ \t]*`, escapedTag)
 	re := regexp.MustCompile(pattern)
 

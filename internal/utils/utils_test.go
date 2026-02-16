@@ -110,7 +110,7 @@ func TestDirExists(t *testing.T) {
 	}
 
 	existingDirFilePath := filepath.Join(tmpDir, "RealDir")
-	os.Mkdir(existingDirFilePath, 755)
+	os.Mkdir(existingDirFilePath, 0755)
 
 	result = DirExists(existingDirFilePath)
 	if result == false {

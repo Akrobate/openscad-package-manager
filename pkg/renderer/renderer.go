@@ -1,6 +1,9 @@
 package renderer
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/Akrobate/openscad-package-manager/internal/utils"
+)
 
 type Renderer struct{}
 
@@ -10,6 +13,12 @@ func NewRenderer() (*Renderer, error) {
 }
 
 func (r *Renderer) List() error {
-	fmt.Println("Renderer List...")
+
+	files, err := utils.FindFilesWithSpecificType(".", "piece")
+	if err != nil {
+		return fmt.Errorf("failed to find files with specific type: %w", err)
+	}
+	fmt.Println(files)
 	return nil
+
 }
