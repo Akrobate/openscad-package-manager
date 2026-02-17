@@ -10,8 +10,8 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"slices"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -196,6 +196,26 @@ func extractTagValues(code string, tag string) []string {
 	re := regexp.MustCompile(pattern)
 
 	matches := re.FindAllStringSubmatch(code, -1)
+
+	for _, m := range matches {
+		if len(m) > 1 {
+			results = append(results, m[1])
+		}
+	}
+
+	return results
+}
+
+// extractTags extract all values of a specific tag
+func extractTags(code string, tag string) []string {
+	var results []string
+
+	escapedTag := regexp.QuoteMeta(tag)
+
+	pattern := fmt.Sprintf(`@%s[ \t]+([^\s*]+)[ \t]*`, escapedTag)
+	re := regexp.MustCompile(pattern)
+
+	matches := re.FindAllStringSubmatch(code, 0)
 
 	for _, m := range matches {
 		if len(m) > 1 {
