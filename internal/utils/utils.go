@@ -206,20 +206,33 @@ func extractTagValues(code string, tag string) []string {
 	return results
 }
 
-// extractTags extract all values of a specific tag
-func extractTags(code string, tag string) []string {
-	var results []string
+func extractAnnotations(code string) []map[string]string {
 
-	escapedTag := regexp.QuoteMeta(tag)
+	blockRegex := regexp.MustCompile(`(?s)/\*\*(.*?)\*/`)
 
-	pattern := fmt.Sprintf(`@%s[ \t]+([^\s*]+)[ \t]*`, escapedTag)
-	re := regexp.MustCompile(pattern)
+	tagRegex := regexp.MustCompile(`@(\w+)(?:\s+([^\n\r*]+))?`)
 
-	matches := re.FindAllStringSubmatch(code, 0)
+	blocks := blockRegex.FindAllStringSubmatch(code, -1)
 
-	for _, m := range matches {
-		if len(m) > 1 {
-			results = append(results, m[1])
+	var results []map[string]string
+
+	for _, block := range blocks {
+		content := block[1]
+
+		tags := tagRegex.FindAllStringSubmatch(content, -1)
+		data := make(map[string]string)
+
+		for _, tag := range tags {
+			key := strings.TrimSpace(tag[1])
+			value := ""
+			if len(tag) > 2 {
+				value = strings.TrimSpace(tag[2])
+			}
+			data[key] = value
+		}
+
+		if len(data) > 0 {
+			results = append(results, data)
 		}
 	}
 

@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 	"time"
 
@@ -191,5 +192,42 @@ func TestExtractTagValues(t *testing.T) {
 
 	if !equal(result_parent, expected_parent) {
 		t.Errorf("extractTagValues(code, \"parent\") = %v; want %v", result_parent, expected_parent)
+	}
+}
+
+func TestExtractAnnotations(t *testing.T) {
+	code := `
+	/**
+	 * UsbChargerFacadeHolderPiece
+	 * @name UsbChargerFacadeHolderPiece
+	 * @type piece
+	 * @parent UsbChargerComponent
+	 * @stl
+	 * @render
+	 */
+
+	/**
+	 * AnotherBlock
+	 * @type    component
+	 */
+	`
+
+	expected := []map[string]string{
+		{
+			"name":   "UsbChargerFacadeHolderPiece",
+			"type":   "piece",
+			"parent": "UsbChargerComponent",
+			"stl":    "",
+			"render": "",
+		},
+		{
+			"type": "component",
+		},
+	}
+
+	result := extractAnnotations(code)
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected:\n%v\nGot:\n%v", expected, result)
 	}
 }
