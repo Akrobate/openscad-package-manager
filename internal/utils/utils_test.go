@@ -231,3 +231,22 @@ func TestExtractAnnotations(t *testing.T) {
 		t.Errorf("Expected:\n%v\nGot:\n%v", expected, result)
 	}
 }
+
+func TestContainsKeyValue(t *testing.T) {
+	seed := []map[string]string{
+		{
+			"name":   "UsbChargerFacadeHolderPiece",
+			"type":   "piece",
+			"parent": "UsbChargerComponent",
+			"stl":    "",
+			"render": "",
+		},
+		{
+			"type": "component",
+		},
+	}
+
+	if !containsKeyValue(seed, "type", "piece") {
+		t.Errorf("Expected:containsKeyValue(seed, type, piece) to be true")
+	}
+}

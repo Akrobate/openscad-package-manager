@@ -238,3 +238,13 @@ func extractAnnotations(code string) []map[string]string {
 
 	return results
 }
+
+// containsKeyValue
+func containsKeyValue(data []map[string]string, key, value string) bool {
+	for _, m := range data {
+		if v, ok := m[key]; ok && v == value {
+			return true
+		}
+	}
+	return false
+}
