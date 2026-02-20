@@ -21,7 +21,7 @@ var renderListCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to initialize renderer: %w", err)
 		}
-		renderer.List()
+		renderer.List(outputType)
 		return nil
 	},
 }

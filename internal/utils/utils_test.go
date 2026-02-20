@@ -225,14 +225,14 @@ func TestExtractAnnotations(t *testing.T) {
 		},
 	}
 
-	result := extractAnnotations(code)
+	result := ExtractAnnotations(code)
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Expected:\n%v\nGot:\n%v", expected, result)
 	}
 }
 
-func TestContainsKeyValue(t *testing.T) {
+func TestAnnotationsContainsKeyValue(t *testing.T) {
 	seed := []map[string]string{
 		{
 			"name":   "UsbChargerFacadeHolderPiece",
@@ -246,7 +246,7 @@ func TestContainsKeyValue(t *testing.T) {
 		},
 	}
 
-	if !containsKeyValue(seed, "type", "piece") {
-		t.Errorf("Expected:containsKeyValue(seed, type, piece) to be true")
+	if !AnnotationsContainsKeyValue(seed, "type", "piece") {
+		t.Errorf("Expected:annotationsContainsKeyValue(seed, type, piece) to be true")
 	}
 }

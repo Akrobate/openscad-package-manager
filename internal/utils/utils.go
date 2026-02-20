@@ -186,6 +186,32 @@ func FindFilesWithSpecificType(rootDir string, element_type string) ([]string, e
 	return results, err
 }
 
+// FindFilesWithSpecificType find all files with a specific type
+func ListAllProjectScadFiles(rootDir string) ([]string, error) {
+
+	var results []string
+
+	err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() && d.Name() == "openscad_modules" {
+			return filepath.SkipDir
+		}
+
+		if d.IsDir() || filepath.Ext(path) != ".scad" {
+			return nil
+		}
+
+		results = append(results, path)
+
+		return nil
+	})
+
+	return results, err
+}
+
 // extractTagValues extract all values of a specific tag
 func extractTagValues(code string, tag string) []string {
 	var results []string
@@ -206,7 +232,7 @@ func extractTagValues(code string, tag string) []string {
 	return results
 }
 
-func extractAnnotations(code string) []map[string]string {
+func ExtractAnnotations(code string) []map[string]string {
 
 	blockRegex := regexp.MustCompile(`(?s)/\*\*(.*?)\*/`)
 
@@ -239,8 +265,8 @@ func extractAnnotations(code string) []map[string]string {
 	return results
 }
 
-// containsKeyValue
-func containsKeyValue(data []map[string]string, key, value string) bool {
+// annotationsContainsKeyValue
+func AnnotationsContainsKeyValue(data []map[string]string, key, value string) bool {
 	for _, m := range data {
 		if v, ok := m[key]; ok && v == value {
 			return true
