@@ -250,3 +250,22 @@ func TestAnnotationsContainsKeyValue(t *testing.T) {
 		t.Errorf("Expected:annotationsContainsKeyValue(seed, type, piece) to be true")
 	}
 }
+
+func TestAnnotationsGetValue(t *testing.T) {
+	seed := []map[string]string{
+		{
+			"name":   "UsbChargerFacadeHolderPiece",
+			"type":   "piece",
+			"parent": "UsbChargerComponent",
+			"stl":    "",
+			"render": "",
+		},
+		{
+			"type": "component",
+		},
+	}
+
+	if !(AnnotationsGetValue(seed, "type") == "piece") {
+		t.Errorf("Expected:annotationsContainsKeyValue(seed, type, piece) to be true")
+	}
+}

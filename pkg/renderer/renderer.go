@@ -3,6 +3,7 @@ package renderer
 import (
 	"fmt"
 	"os"
+
 	"github.com/Akrobate/openscad-package-manager/internal/utils"
 )
 
@@ -33,7 +34,13 @@ func (r *Renderer) List(renderType string) error {
 		anotationsList := utils.ExtractAnnotations(string(data))
 
 		if utils.AnnotationsContainsKeyValue(anotationsList, renderType, "") {
-			fmt.Println(file)
+
+			if renderType == "png" {
+
+			} else {
+				fmt.Println(file)
+			}
+
 		}
 
 	}

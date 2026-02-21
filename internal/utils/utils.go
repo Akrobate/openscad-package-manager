@@ -274,3 +274,13 @@ func AnnotationsContainsKeyValue(data []map[string]string, key, value string) bo
 	}
 	return false
 }
+
+// AnnotationsGetValue
+func AnnotationsGetValue(data []map[string]string, key string) string {
+	for _, m := range data {
+		if v, ok := m[key]; ok {
+			return v
+		}
+	}
+	return ""
+}
