@@ -275,6 +275,16 @@ func AnnotationsContainsKeyValue(data []map[string]string, key, value string) bo
 	return false
 }
 
+// annotationsContainsKeyValue
+func AnnotationsContainsKey(data []map[string]string, key string) bool {
+	for _, m := range data {
+		if _, ok := m[key]; ok {
+			return true
+		}
+	}
+	return false
+}
+
 // AnnotationsGetValue
 func AnnotationsGetValue(data []map[string]string, key string) string {
 	for _, m := range data {

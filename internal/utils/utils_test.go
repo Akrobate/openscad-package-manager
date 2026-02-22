@@ -251,6 +251,30 @@ func TestAnnotationsContainsKeyValue(t *testing.T) {
 	}
 }
 
+func TestAnnotationsContainsKey(t *testing.T) {
+	seed := []map[string]string{
+		{
+			"name":   "UsbChargerFacadeHolderPiece",
+			"type":   "piece",
+			"parent": "UsbChargerComponent",
+			"stl":    "",
+			"render": "",
+		},
+		{
+			"type": "component",
+		},
+	}
+
+	if !(AnnotationsContainsKey(seed, "type")) {
+		t.Errorf("Expected:AnnotationsContainsKey(seed, type) to be true")
+	}
+
+	if AnnotationsContainsKey(seed, "inexisting_key") {
+		t.Errorf("Expected:AnnotationsContainsKey(seed, inexisting_key) to be false")
+	}
+
+}
+
 func TestAnnotationsGetValue(t *testing.T) {
 	seed := []map[string]string{
 		{
