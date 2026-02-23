@@ -34,13 +34,21 @@ func (r *Renderer) List(renderType string) error {
 		anotationsList := utils.ExtractAnnotations(string(data))
 
 		if utils.AnnotationsContainsKeyValue(anotationsList, renderType, "") {
-
 			if renderType == "png" {
+
+				if utils.AnnotationsContainsKey(anotationsList, "colorscheme") {
+
+				}
+
+				if utils.AnnotationsContainsKey(anotationsList, "view") {
+
+				}
+
+				fmt.Println(file)
 
 			} else {
 				fmt.Println(file)
 			}
-
 		}
 
 	}
