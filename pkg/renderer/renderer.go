@@ -3,6 +3,7 @@ package renderer
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/Akrobate/openscad-package-manager/internal/utils"
 )
@@ -36,14 +37,6 @@ func (r *Renderer) List(renderType string) error {
 		if utils.AnnotationsContainsKeyValue(anotationsList, renderType, "") {
 			if renderType == "png" {
 
-				if utils.AnnotationsContainsKey(anotationsList, "colorscheme") {
-
-				}
-
-				if utils.AnnotationsContainsKey(anotationsList, "view") {
-
-				}
-
 				fmt.Println(file)
 
 			} else {
@@ -55,4 +48,25 @@ func (r *Renderer) List(renderType string) error {
 
 	return nil
 
+}
+
+func generateOpenscadPngCommandLine(anotationsList []map[string]string) []string {
+	commandLineArgs := []string{}
+
+	if utils.AnnotationsContainsKey(anotationsList, "colorscheme") {
+		//--colorscheme="BeforeDawn"
+		commandLineArgs = append(commandLineArgs, fmt.Sprintf("--colorscheme=\"%s\"", utils.AnnotationsGetValue(anotationsList, "colorscheme")))
+	}
+
+	if utils.AnnotationsContainsKey(anotationsList, "view") {
+		commandLineArgs = append(commandLineArgs, fmt.Sprintf("--view=\"%s\"", utils.AnnotationsGetValue(anotationsList, "view")))
+	}
+
+	return commandLineArgs
+}
+
+// checkOpenscadInstalled
+func checkOpenscadInstalled() bool {
+	_, err := exec.LookPath("openscad")
+	return err == nil
 }
