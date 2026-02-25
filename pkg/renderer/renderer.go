@@ -36,25 +36,28 @@ func (r *Renderer) List(renderType string) error {
 
 		if utils.AnnotationsContainsKeyValue(anotationsList, renderType, "") {
 			if renderType == "png" {
-
 				fmt.Println(file)
-
 			} else {
 				fmt.Println(file)
 			}
 		}
+	}
+	return nil
+}
 
+func (r *Renderer) Process(renderType string) error {
+
+	if !checkOpenscadInstalled() {
+		return fmt.Errorf("Openscad bin not foud")
 	}
 
 	return nil
-
 }
 
 func generateOpenscadPngCommandLine(anotationsList []map[string]string) []string {
 	commandLineArgs := []string{}
 
 	if utils.AnnotationsContainsKey(anotationsList, "colorscheme") {
-		//--colorscheme="BeforeDawn"
 		commandLineArgs = append(commandLineArgs, fmt.Sprintf("--colorscheme=\"%s\"", utils.AnnotationsGetValue(anotationsList, "colorscheme")))
 	}
 
