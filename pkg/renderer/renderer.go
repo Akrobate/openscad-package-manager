@@ -16,8 +16,12 @@ func NewRenderer() (*Renderer, error) {
 }
 
 func (r *Renderer) List(renderType string) error {
-	if renderType != "stl" && renderType != "png" {
-		return fmt.Errorf("invalid render type: %s", renderType)
+	if err := checkRenderTypeParam(renderType); err != nil {
+		return err
+	}
+
+	if !checkOpenscadInstalled() {
+		return fmt.Errorf("Openscad bin not foud")
 	}
 
 	files, err := utils.ListAllProjectScadFiles(".")
@@ -46,6 +50,9 @@ func (r *Renderer) List(renderType string) error {
 }
 
 func (r *Renderer) Process(renderType string) error {
+	if err := checkRenderTypeParam(renderType); err != nil {
+		return err
+	}
 
 	if !checkOpenscadInstalled() {
 		return fmt.Errorf("Openscad bin not foud")
@@ -72,4 +79,12 @@ func generateOpenscadPngCommandLine(anotationsList []map[string]string) []string
 func checkOpenscadInstalled() bool {
 	_, err := exec.LookPath("openscad")
 	return err == nil
+}
+
+// checkRenderTypeParam
+func checkRenderTypeParam(renderType string) error {
+	if renderType != "stl" && renderType != "png" {
+		return fmt.Errorf("invalid render type: %s", renderType)
+	}
+	return nil
 }
