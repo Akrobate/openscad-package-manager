@@ -57,6 +57,28 @@ func (r *Renderer) Process(renderType string) error {
 	if !checkOpenscadInstalled() {
 		return fmt.Errorf("Openscad bin not foud")
 	}
+	files, err := utils.ListAllProjectScadFiles(".")
+
+	if err != nil {
+		return fmt.Errorf("failed to find files with specific type: %w", err)
+	}
+
+	for _, file := range files {
+		data, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+
+		anotationsList := utils.ExtractAnnotations(string(data))
+
+		if utils.AnnotationsContainsKeyValue(anotationsList, renderType, "") {
+			if renderType == "png" {
+				fmt.Println(file)
+			} else {
+				fmt.Println(file)
+			}
+		}
+	}
 
 	return nil
 }
