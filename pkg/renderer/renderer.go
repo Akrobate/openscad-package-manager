@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/Akrobate/openscad-package-manager/internal/utils"
 )
@@ -75,7 +76,7 @@ func (r *Renderer) Process(renderType string) error {
 		if utils.AnnotationsContainsKeyValue(anotationsList, renderType, "") {
 			if renderType == "png" {
 				fmt.Println(file)
-
+				generatePngFile(file, anotationsList)
 			} else {
 				fmt.Println(file)
 			}
@@ -85,15 +86,27 @@ func (r *Renderer) Process(renderType string) error {
 	return nil
 }
 
-func generatePngFile(file string, anotationList []map[string]string) error {
+func generatePngFile(file string, anotationsList []map[string]string) error {
 
 	dir := filepath.Dir(file)
-	pngFileFolder := filepath.Join("png_files", dir)
+	pngFileFolder := filepath.Join("opm_png_files", dir)
 	err := os.MkdirAll(pngFileFolder, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("Erreur %s", err)
+		return fmt.Errorf("Error %s", err)
 	}
 
+	paramsPngGeneration := generateOpenscadPngCommandLine(anotationsList)
+
+	filename := filepath.Base(file)
+	name := strings.TrimSuffix(filename, filepath.Ext(filename))
+	args := append(paramsPngGeneration, "-o", filepath.Join(pngFileFolder, name+".png"))
+
+	cmd := exec.Command("openscad", args...)
+	// exécuter
+	err = cmd.Run()
+	if err != nil {
+		fmt.Errorf("Error openscad %s", err)
+	}
 	return nil
 }
 
