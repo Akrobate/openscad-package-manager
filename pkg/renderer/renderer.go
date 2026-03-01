@@ -99,13 +99,17 @@ func generatePngFile(file string, anotationsList []map[string]string) error {
 
 	filename := filepath.Base(file)
 	name := strings.TrimSuffix(filename, filepath.Ext(filename))
-	args := append(paramsPngGeneration, "-o", filepath.Join(pngFileFolder, name+".png"))
+	args := append(paramsPngGeneration, "-o ", filepath.Join(pngFileFolder, name+".png", " .", file))
 
 	cmd := exec.Command("openscad", args...)
+
+	fmt.Println(strings.Join(args, ""))
+
 	// exécuter
 	err = cmd.Run()
 	if err != nil {
-		fmt.Errorf("Error openscad %s", err)
+		fmt.Println(err)
+		return fmt.Errorf("Error openscad %s", err)
 	}
 	return nil
 }
@@ -114,11 +118,11 @@ func generateOpenscadPngCommandLine(anotationsList []map[string]string) []string
 	commandLineArgs := []string{}
 
 	if utils.AnnotationsContainsKey(anotationsList, "colorscheme") {
-		commandLineArgs = append(commandLineArgs, fmt.Sprintf("--colorscheme=\"%s\"", utils.AnnotationsGetValue(anotationsList, "colorscheme")))
+		commandLineArgs = append(commandLineArgs, fmt.Sprintf(" --colorscheme=\"%s\" ", utils.AnnotationsGetValue(anotationsList, "colorscheme")))
 	}
 
 	if utils.AnnotationsContainsKey(anotationsList, "view") {
-		commandLineArgs = append(commandLineArgs, fmt.Sprintf("--view=\"%s\"", utils.AnnotationsGetValue(anotationsList, "view")))
+		commandLineArgs = append(commandLineArgs, fmt.Sprintf(" --view=\"%s\" ", utils.AnnotationsGetValue(anotationsList, "view")))
 	}
 
 	return commandLineArgs
