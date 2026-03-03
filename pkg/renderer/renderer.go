@@ -81,11 +81,12 @@ func (r *Renderer) Process(renderType string) error {
 			if renderType == "png" {
 				generationError = generatePngFile(file, anotationsList)
 			} else {
-				fmt.Println(file)
+				generationError = generateStlFile(file, anotationsList)
 			}
 
 			if generationError != nil {
 				fmt.Printf("❌ %s\n", file)
+				fmt.Println(generationError)
 				continue
 			} else {
 				fmt.Printf("✅ %s\n", file)
@@ -121,10 +122,35 @@ func generatePngFile(file string, anotationsList []map[string]string) error {
 	// exécuter
 	err = cmd.Run()
 	if err != nil {
-		fmt.Println(err)
-		// fmt.Println("Erreur Go :", err)
-		// fmt.Println("STDOUT :", stdout.String())
-		// fmt.Println("STDERR :", stderr.String())
+		return fmt.Errorf("Error openscad %s", err)
+	}
+	return nil
+}
+
+func generateStlFile(file string, anotationsList []map[string]string) error {
+
+	// @todo : should be a member var
+	stlFileFolder := filepath.Join("opm_stl_files")
+	err := os.MkdirAll(stlFileFolder, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("Error %s", err)
+	}
+
+	paramsStlGeneration := []string{}
+	filename := filepath.Base(file)
+	name := strings.TrimSuffix(filename, filepath.Ext(filename))
+	args := append(paramsStlGeneration, "-o", filepath.Join(stlFileFolder, name+".stl"), file)
+
+	cmd := exec.Command("openscad", args...)
+
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	// exécuter
+	err = cmd.Run()
+	if err != nil {
 		return fmt.Errorf("Error openscad %s", err)
 	}
 	return nil
