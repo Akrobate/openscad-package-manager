@@ -1,7 +1,6 @@
 package renderer
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -11,11 +10,17 @@ import (
 	"github.com/Akrobate/openscad-package-manager/internal/utils"
 )
 
-type Renderer struct{}
+type Renderer struct {
+	pngFilesFolderName string
+	stlFilesFolderName string
+}
 
 func NewRenderer() (*Renderer, error) {
 
-	return &Renderer{}, nil
+	return &Renderer{
+		pngFilesFolderName: "opm_png_files",
+		stlFilesFolderName: "opm_stl_files",
+	}, nil
 }
 
 func (r *Renderer) List(renderType string) error {
@@ -79,9 +84,9 @@ func (r *Renderer) Process(renderType string) error {
 			var generationError error
 
 			if renderType == "png" {
-				generationError = generatePngFile(file, anotationsList)
+				generationError = r.generatePngFile(file, anotationsList)
 			} else {
-				generationError = generateStlFile(file, anotationsList)
+				generationError = r.generateStlFile(file)
 			}
 
 			if generationError != nil {
@@ -97,10 +102,10 @@ func (r *Renderer) Process(renderType string) error {
 	return nil
 }
 
-func generatePngFile(file string, anotationsList []map[string]string) error {
+func (r *Renderer) generatePngFile(file string, anotationsList []map[string]string) error {
 
 	dir := filepath.Dir(file)
-	pngFileFolder := filepath.Join("opm_png_files", dir)
+	pngFileFolder := filepath.Join(r.pngFilesFolderName, dir)
 	err := os.MkdirAll(pngFileFolder, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("Error %s", err)
@@ -114,12 +119,6 @@ func generatePngFile(file string, anotationsList []map[string]string) error {
 
 	cmd := exec.Command("openscad", args...)
 
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
-
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	// exécuter
 	err = cmd.Run()
 	if err != nil {
 		return fmt.Errorf("Error openscad %s", err)
@@ -127,10 +126,9 @@ func generatePngFile(file string, anotationsList []map[string]string) error {
 	return nil
 }
 
-func generateStlFile(file string, anotationsList []map[string]string) error {
+func (r *Renderer) generateStlFile(file string) error {
 
-	// @todo : should be a member var
-	stlFileFolder := filepath.Join("opm_stl_files")
+	stlFileFolder := filepath.Join(r.stlFilesFolderName)
 	err := os.MkdirAll(stlFileFolder, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("Error %s", err)
@@ -143,12 +141,6 @@ func generateStlFile(file string, anotationsList []map[string]string) error {
 
 	cmd := exec.Command("openscad", args...)
 
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
-
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	// exécuter
 	err = cmd.Run()
 	if err != nil {
 		return fmt.Errorf("Error openscad %s", err)
