@@ -102,30 +102,6 @@ func (r *Renderer) Process(renderType string) error {
 	return nil
 }
 
-func (r *Renderer) generatePngFile(file string, anotationsList []map[string]string) error {
-
-	dir := filepath.Dir(file)
-	pngFileFolder := filepath.Join(r.pngFilesFolderName, dir)
-	err := os.MkdirAll(pngFileFolder, os.ModePerm)
-	if err != nil {
-		return fmt.Errorf("Error %s", err)
-	}
-
-	paramsPngGeneration := generateOpenscadPngCommandLine(anotationsList)
-
-	filename := filepath.Base(file)
-	name := strings.TrimSuffix(filename, filepath.Ext(filename))
-	args := append(paramsPngGeneration, "-o", filepath.Join(pngFileFolder, name+".png"), file)
-
-	cmd := exec.Command("openscad", args...)
-
-	err = cmd.Run()
-	if err != nil {
-		return fmt.Errorf("Error openscad %s", err)
-	}
-	return nil
-}
-
 func (r *Renderer) generateStlFile(file string) error {
 
 	stlFileFolder := filepath.Join(r.stlFilesFolderName)
@@ -148,7 +124,27 @@ func (r *Renderer) generateStlFile(file string) error {
 	return nil
 }
 
-func generateOpenscadPngCommandLine(anotationsList []map[string]string) []string {
+func (r *Renderer) generatePngFile(file string, anotationsList []map[string]string) error {
+
+	args, err := r.generateOpenscadPngCommandLineParams(file, anotationsList)
+	if err != nil {
+		return fmt.Errorf("generatePngFile %s", err)
+	}
+
+	err = r.runOpenscadCommand(args)
+
+	return err
+}
+
+func (r *Renderer) generateOpenscadPngCommandLineParams(file string, anotationsList []map[string]string) ([]string, error) {
+
+	dir := filepath.Dir(file)
+	pngFileFolder := filepath.Join(r.pngFilesFolderName, dir)
+	err := os.MkdirAll(pngFileFolder, os.ModePerm)
+	if err != nil {
+		return nil, fmt.Errorf("Error %s", err)
+	}
+
 	commandLineArgs := []string{}
 
 	if utils.AnnotationsContainsKey(anotationsList, "colorscheme") {
@@ -158,8 +154,21 @@ func generateOpenscadPngCommandLine(anotationsList []map[string]string) []string
 	if utils.AnnotationsContainsKey(anotationsList, "view") {
 		commandLineArgs = append(commandLineArgs, fmt.Sprintf("--view=%s", utils.AnnotationsGetValue(anotationsList, "view")))
 	}
+	filename := filepath.Base(file)
+	name := strings.TrimSuffix(filename, filepath.Ext(filename))
+	commandLineArgs = append(commandLineArgs, "-o", filepath.Join(pngFileFolder, name+".png"), file)
 
-	return commandLineArgs
+	return commandLineArgs, nil
+}
+
+func (r *Renderer) runOpenscadCommand(args []string) error {
+	cmd := exec.Command("openscad", args...)
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("Error openscad %s", err)
+	}
+	return nil
 }
 
 // checkOpenscadInstalled
