@@ -103,37 +103,19 @@ func (r *Renderer) Process(renderType string) error {
 }
 
 func (r *Renderer) generateStlFile(file string) error {
-
-	stlFileFolder := filepath.Join(r.stlFilesFolderName)
-	err := os.MkdirAll(stlFileFolder, os.ModePerm)
+	args, err := r.generateOpenscadStlCommandLineParams(file)
 	if err != nil {
-		return fmt.Errorf("Error %s", err)
+		return fmt.Errorf("generateStlFile %s", err)
 	}
-
-	paramsStlGeneration := []string{}
-	filename := filepath.Base(file)
-	name := strings.TrimSuffix(filename, filepath.Ext(filename))
-	args := append(paramsStlGeneration, "-o", filepath.Join(stlFileFolder, name+".stl"), file)
-
-	cmd := exec.Command("openscad", args...)
-
-	err = cmd.Run()
-	if err != nil {
-		return fmt.Errorf("Error openscad %s", err)
-	}
-	return nil
+	return r.runOpenscadCommand(args)
 }
 
 func (r *Renderer) generatePngFile(file string, anotationsList []map[string]string) error {
-
 	args, err := r.generateOpenscadPngCommandLineParams(file, anotationsList)
 	if err != nil {
 		return fmt.Errorf("generatePngFile %s", err)
 	}
-
-	err = r.runOpenscadCommand(args)
-
-	return err
+	return r.runOpenscadCommand(args)
 }
 
 func (r *Renderer) generateOpenscadPngCommandLineParams(file string, anotationsList []map[string]string) ([]string, error) {
@@ -159,6 +141,22 @@ func (r *Renderer) generateOpenscadPngCommandLineParams(file string, anotationsL
 	commandLineArgs = append(commandLineArgs, "-o", filepath.Join(pngFileFolder, name+".png"), file)
 
 	return commandLineArgs, nil
+}
+
+func (r *Renderer) generateOpenscadStlCommandLineParams(file string) ([]string, error) {
+
+	stlFileFolder := filepath.Join(r.stlFilesFolderName)
+	err := os.MkdirAll(stlFileFolder, os.ModePerm)
+	if err != nil {
+		return nil, fmt.Errorf("Error %s", err)
+	}
+
+	paramsStlGeneration := []string{}
+	filename := filepath.Base(file)
+	name := strings.TrimSuffix(filename, filepath.Ext(filename))
+	paramsStlGeneration = append(paramsStlGeneration, "-o", filepath.Join(stlFileFolder, name+".stl"), file)
+
+	return paramsStlGeneration, nil
 }
 
 func (r *Renderer) runOpenscadCommand(args []string) error {
