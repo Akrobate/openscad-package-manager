@@ -13,6 +13,7 @@ import (
 type Renderer struct {
 	pngFilesFolderName string
 	stlFilesFolderName string
+	openscadBinFile    string
 }
 
 func NewRenderer() (*Renderer, error) {
@@ -20,6 +21,7 @@ func NewRenderer() (*Renderer, error) {
 	return &Renderer{
 		pngFilesFolderName: "opm_png_files",
 		stlFilesFolderName: "opm_stl_files",
+		openscadBinFile:    "openscad",
 	}, nil
 }
 
@@ -28,7 +30,7 @@ func (r *Renderer) List(renderType string) error {
 		return err
 	}
 
-	if !checkOpenscadInstalled() {
+	if !r.checkOpenscadInstalled() {
 		return fmt.Errorf("Openscad bin not foud")
 	}
 
@@ -62,7 +64,7 @@ func (r *Renderer) Process(renderType string) error {
 		return err
 	}
 
-	if !checkOpenscadInstalled() {
+	if !r.checkOpenscadInstalled() {
 		return fmt.Errorf("Openscad bin not foud")
 	}
 	files, err := utils.ListAllProjectScadFiles(".")
@@ -105,7 +107,7 @@ func (r *Renderer) Process(renderType string) error {
 func (r *Renderer) generateStlFile(file string) error {
 	args, err := r.generateOpenscadStlCommandLineParams(file)
 	if err != nil {
-		return fmt.Errorf("generateStlFile %s", err)
+		return fmt.Errorf("generateOpenscadStlCommandLineParams %s", err)
 	}
 	return r.runOpenscadCommand(args)
 }
@@ -113,7 +115,7 @@ func (r *Renderer) generateStlFile(file string) error {
 func (r *Renderer) generatePngFile(file string, anotationsList []map[string]string) error {
 	args, err := r.generateOpenscadPngCommandLineParams(file, anotationsList)
 	if err != nil {
-		return fmt.Errorf("generatePngFile %s", err)
+		return fmt.Errorf("generateOpenscadPngCommandLineParams %s", err)
 	}
 	return r.runOpenscadCommand(args)
 }
@@ -159,19 +161,20 @@ func (r *Renderer) generateOpenscadStlCommandLineParams(file string) ([]string, 
 	return paramsStlGeneration, nil
 }
 
+// runOpenscadCommand
 func (r *Renderer) runOpenscadCommand(args []string) error {
-	cmd := exec.Command("openscad", args...)
+	cmd := exec.Command(r.openscadBinFile, args...)
 
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("Error openscad %s", err)
+		return fmt.Errorf("Error runOpenscadCommand %s", err)
 	}
 	return nil
 }
 
 // checkOpenscadInstalled
-func checkOpenscadInstalled() bool {
-	_, err := exec.LookPath("openscad")
+func (r *Renderer) checkOpenscadInstalled() bool {
+	_, err := exec.LookPath(r.openscadBinFile)
 	return err == nil
 }
 
