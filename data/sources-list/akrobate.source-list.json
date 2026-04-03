@@ -50,5 +50,9 @@
     {
         "name":"esp-module-holder-3d-model",
         "repsotiry":"https://gitlab.com/Akrobate/esp-module-holder-3d-model.git"
-    }   
+    },
+    {
+        "name":"usb-connector",
+        "repsotiry":"https://gitlab.com/openscad-modules/usb-connector.git"
+    }
 ]

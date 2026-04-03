@@ -1,4 +1,0 @@
-https://gitlab.com/openscad-modules/battery.git
-https://gitlab.com/openscad-modules/breadboard.git
-https://gitlab.com/openscad-modules/button.git
-https://gitlab.com/openscad-modules/commons.git
