@@ -140,9 +140,13 @@ go tool cover -html=coverage.out -o coverage.html
 
 
 ## Roadmap @todo
-- [ ] Add renderer mecanic
-    - [ ] Document anotating tags
-    - [ ] create simple command for rendering
+- [ ] Finish repository management
+- [ ] Adding source list is problematic for now to fix
+- [ ] List installed repositories Not implemented
+- [ ] Update remote content of lists
+- [x] Add renderer mecanic
+    - [x] Document anotating tags
+    - [x] create simple command for rendering
 - [x] opm unistall should throw an error if no scad file in current folder
 - [x] Info Read module's package scad.json file
 - [x] Normalize tmp folder when installing package
