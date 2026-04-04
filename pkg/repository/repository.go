@@ -143,7 +143,7 @@ func (m *RepositoryManager) getSourceList(url string) (string, error) {
 }
 
 /**
- * getSourceList
+ * Search
  */
 func (m *RepositoryManager) Search(searchString string) ([]PackageItem, error) {
 
@@ -183,4 +183,49 @@ func checkPackageItemInArray(packageItemList []PackageItem, packageItem PackageI
 		}
 	}
 	return false
+}
+
+/**
+ * Update
+ * work in progress
+ */
+func (m *RepositoryManager) Update() error {
+
+	f, err := os.OpenFile(
+		m.repositorySourcesListFile,
+		os.O_APPEND|os.O_CREATE|os.O_RDWR,
+		0644,
+	)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	contentBytes, err := io.ReadAll(f)
+	if err != nil {
+		return err
+	}
+	contentString := string(contentBytes)
+	repositorySourcesListFileLines := strings.Split(contentString, "\n")
+
+	var modules []PackageItem
+	for _, u := range repositorySourcesListFileLines {
+		name := strings.TrimSuffix(path.Base(u), ".git")
+		modules = append(modules, PackageItem{
+			Name:       name,
+			Repository: u,
+		})
+	}
+
+	jsonBytes, err := json.MarshalIndent(modules, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	cacheFileName := utils.URLToFilenameHash(repositorySourcesUrl)
+	if err := os.WriteFile(filepath.Join(m.repositorySourcesCache, cacheFileName), []byte(jsonBytes), 0755); err != nil {
+		return err
+	}
+
+	return err
+	return nil
 }
