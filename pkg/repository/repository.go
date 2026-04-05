@@ -200,32 +200,37 @@ func (m *RepositoryManager) Update() error {
 		return err
 	}
 	defer f.Close()
+
 	contentBytes, err := io.ReadAll(f)
 	if err != nil {
 		return err
 	}
-	contentString := string(contentBytes)
-	repositorySourcesListFileLines := strings.Split(contentString, "\n")
+	repositorySourcesListFileLines := strings.Split(string(contentBytes), "\n")
 
-	var modules []PackageItem
-	for _, u := range repositorySourcesListFileLines {
-		name := strings.TrimSuffix(path.Base(u), ".git")
-		modules = append(modules, PackageItem{
-			Name:       name,
-			Repository: u,
-		})
-	}
+	for _, sourceListItem := range repositorySourcesListFileLines {
 
-	jsonBytes, err := json.MarshalIndent(modules, "", "    ")
-	if err != nil {
-		return err
-	}
+		sourceContent, err := m.getSourceList(sourceListItem)
+		sourceContentArray := strings.Split(sourceContent, "\n")
 
-	cacheFileName := utils.URLToFilenameHash(repositorySourcesUrl)
-	if err := os.WriteFile(filepath.Join(m.repositorySourcesCache, cacheFileName), []byte(jsonBytes), 0755); err != nil {
-		return err
+		var modules []PackageItem
+		for _, u := range sourceContentArray {
+			name := strings.TrimSuffix(path.Base(u), ".git")
+			modules = append(modules, PackageItem{
+				Name:       name,
+				Repository: u,
+			})
+		}
+
+		jsonBytes, err := json.MarshalIndent(modules, "", "    ")
+		if err != nil {
+			return err
+		}
+
+		cacheFileName := utils.URLToFilenameHash(sourceListItem)
+		if err := os.WriteFile(filepath.Join(m.repositorySourcesCache, cacheFileName), []byte(jsonBytes), 0755); err != nil {
+			return err
+		}
 	}
 
 	return err
-	return nil
 }
