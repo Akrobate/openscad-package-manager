@@ -166,7 +166,7 @@ func (m *RepositoryManager) Search(searchString string) ([]PackageItem, error) {
 		}
 
 		for _, tmpResult := range tmpResultList {
-			if checkPackageItemInArray(result, tmpResult) == false && strings.Contains(tmpResult.Name, searchString) {
+			if checkPackageItemInArray(result, tmpResult) == false && (strings.Contains(tmpResult.Name, searchString) || searchString == "") {
 				result = append(result, tmpResult)
 			}
 		}

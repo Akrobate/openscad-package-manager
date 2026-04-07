@@ -12,10 +12,13 @@ var searchCmd = &cobra.Command{
 	Short: "Search Openscad module",
 	Long: `Search Openscad modules.
 `,
-	Args: cobra.ExactArgs(1),
+	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		searchString := args[0]
+		searchString := ""
+		if len(args) > 0 {
+			searchString = args[0]
+		}
 
 		repositoryMgr, err := repository.NewRepositoryManager()
 		if err != nil {
