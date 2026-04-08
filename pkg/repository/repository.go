@@ -47,15 +47,28 @@ func NewRepositoryManager() (*RepositoryManager, error) {
 /**
  * List Curent
  */
-func (m *RepositoryManager) List() error {
+func (m *RepositoryManager) List() ([]string, error) {
 
-	dir, err := os.Getwd()
+	// @todo script to refactor, reading source list
+
+	f, err := os.OpenFile(
+		m.repositorySourcesListFile,
+		os.O_APPEND|os.O_CREATE|os.O_RDWR,
+		0644,
+	)
 	if err != nil {
-		return fmt.Errorf(" not found")
+		return nil, err
 	}
-	fmt.Print(dir)
+	defer f.Close()
 
-	return nil
+	contentBytes, err := io.ReadAll(f)
+	if err != nil {
+		return nil, err
+	}
+	contentString := string(contentBytes)
+	repositorySourcesListFileLines := strings.Split(contentString, "\n")
+
+	return repositorySourcesListFileLines, nil
 }
 
 /**

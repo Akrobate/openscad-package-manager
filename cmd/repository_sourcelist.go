@@ -7,20 +7,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var repositoryListCmd = &cobra.Command{
-	Use:   "list",
+var repositorySourceListCmd = &cobra.Command{
+	Use:   "sourcelist",
 	Short: "Show repository list",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		repositoryMgr, err := repository.NewRepositoryManager()
 		if err != nil {
 			return fmt.Errorf("failed to initialize repository manager: %w", err)
 		}
-		repositoryMgr.List()
-		fmt.Println("======== List List================")
+		sourceList, err := repositoryMgr.List()
+		if err != nil {
+			return fmt.Errorf("failed to repositoryMgr.List: %w", err)
+		}
+		for _, sourceListItem := range sourceList {
+			fmt.Printf("%s\n", sourceListItem)
+		}
 		return nil
 	},
 }
 
 func init() {
-	repositoryCmd.AddCommand(repositoryListCmd)
+	repositoryCmd.AddCommand(repositorySourceListCmd)
 }
