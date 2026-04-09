@@ -49,11 +49,9 @@ func NewRepositoryManager() (*RepositoryManager, error) {
  */
 func (m *RepositoryManager) List() ([]string, error) {
 
-	// @todo script to refactor, reading source list
-
 	f, err := os.OpenFile(
 		m.repositorySourcesListFile,
-		os.O_APPEND|os.O_CREATE|os.O_RDWR,
+		os.O_RDWR,
 		0644,
 	)
 	if err != nil {
@@ -66,7 +64,13 @@ func (m *RepositoryManager) List() ([]string, error) {
 		return nil, err
 	}
 	contentString := string(contentBytes)
-	repositorySourcesListFileLines := strings.Split(contentString, "\n")
+
+	var repositorySourcesListFileLines []string
+	for _, v := range strings.Split(contentString, "\n") {
+		if v == "" {
+			repositorySourcesListFileLines = append(repositorySourcesListFileLines, v)
+		}
+	}
 
 	return repositorySourcesListFileLines, nil
 }
