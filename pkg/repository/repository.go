@@ -47,7 +47,7 @@ func NewRepositoryManager() (*RepositoryManager, error) {
 /**
  * List Curent
  */
-func (m *RepositoryManager) List() ([]string, error) {
+func (m *RepositoryManager) ListSources() ([]string, error) {
 
 	f, err := os.OpenFile(
 		m.repositorySourcesListFile,
@@ -80,7 +80,7 @@ func (m *RepositoryManager) List() ([]string, error) {
  */
 func (m *RepositoryManager) Add(repositorySourcesUrl string) error {
 
-	content, err := m.getSourceList(repositorySourcesUrl)
+	content, err := m.getPackageListFromSourceUrl(repositorySourcesUrl)
 	if err != nil {
 		return fmt.Errorf("Failed to reach URL\n %w", err)
 	}
@@ -134,9 +134,9 @@ func (m *RepositoryManager) Add(repositorySourcesUrl string) error {
 }
 
 /**
- * getSourceList
+ * getPackageListFromSourceUrl
  */
-func (m *RepositoryManager) getSourceList(url string) (string, error) {
+func (m *RepositoryManager) getPackageListFromSourceUrl(url string) (string, error) {
 	client := &http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -153,7 +153,7 @@ func (m *RepositoryManager) getSourceList(url string) (string, error) {
 	}
 
 	if resp.StatusCode != 200 {
-		return "", fmt.Errorf("Failed getSourceList %s", resp.Status)
+		return "", fmt.Errorf("Failed getPackageListFromSourceUrl %s", resp.Status)
 	}
 
 	return string(body), nil
@@ -226,7 +226,7 @@ func (m *RepositoryManager) Update() error {
 
 	for _, sourceListItem := range repositorySourcesListFileLines {
 
-		sourceContent, err := m.getSourceList(sourceListItem)
+		sourceContent, err := m.getPackageListFromSourceUrl(sourceListItem)
 		sourceContentArray := strings.Split(sourceContent, "\n")
 
 		var modules []PackageItem

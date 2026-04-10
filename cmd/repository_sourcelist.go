@@ -15,7 +15,7 @@ var repositorySourceListCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to initialize repository manager: %w", err)
 		}
-		sourceList, err := repositoryMgr.List()
+		sourceList, err := repositoryMgr.ListSources()
 		if err != nil {
 			return fmt.Errorf("failed to repositoryMgr.List: %w", err)
 		}
