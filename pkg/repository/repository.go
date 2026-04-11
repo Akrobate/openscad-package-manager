@@ -226,6 +226,10 @@ func (m *RepositoryManager) Update() error {
 
 	for _, sourceListItem := range repositorySourcesListFileLines {
 
+		if sourceListItem == "" {
+			continue
+		}
+
 		sourceContent, err := m.getPackageListFromSourceUrl(sourceListItem)
 		sourceContentArray := strings.Split(sourceContent, "\n")
 

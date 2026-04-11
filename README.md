@@ -82,8 +82,13 @@ Versions:
 ### Package repository source list
 
 ```
+# Example source JSON
 https://raw.githubusercontent.com/Akrobate/openscad-package-manager/refs/heads/master/data/sources-list/akrobate.source-list.json
+
+# Example source TXT
+https://raw.githubusercontent.com/Akrobate/openscad-package-manager/refs/heads/master/data/sources-list/akrobate.source-list.txt
 ```
+
 
 ## Développement
 
@@ -141,9 +146,9 @@ go tool cover -html=coverage.out -o coverage.html
 
 ## Roadmap @todo
 - [ ] Finish repository management
-- [ ] Adding source list is problematic for now to fix
-- [ ] List installed repositories Not implemented
-- [ ] Update remote content of lists
+- [ ] (to test) Adding source list is problematic for now to fix 
+- [x] List installed repositories Not implemented
+- [x] Update remote content of lists
 - [x] Add renderer mecanic
     - [x] Document anotating tags
     - [x] create simple command for rendering
