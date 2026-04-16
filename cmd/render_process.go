@@ -8,9 +8,19 @@ import (
 )
 
 var renderProcessCmd = &cobra.Command{
-	Use:       "process",
-	Short:     "Process render png / stl files",
-	Args:      cobra.ExactArgs(1),
+	Use:   "process",
+	Short: "Process render png / stl files",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			return fmt.Errorf("you must provide exactly one argument: \"stl\" or \"png\"")
+		}
+
+		if args[0] != "stl" && args[0] != "png" {
+			return fmt.Errorf("invalid argument %q: must be \"stl\" or \"png\"", args[0])
+		}
+
+		return nil
+	},
 	ValidArgs: []string{"stl", "png"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		outputType := args[0]
