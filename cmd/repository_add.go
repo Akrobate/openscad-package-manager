@@ -10,7 +10,14 @@ import (
 var repositoryAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a repository list",
-	Args:  cobra.ExactArgs(1),
+	Long: `Add a repository list
+	
+emaxample
+
+opm repository add https://raw.githubusercontent.com/Akrobate/openscad-package-manager/refs/heads/master/data/sources-list/akrobate.source-list.txt
+	
+`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		sourceList := args[0]
 		repositoryMgr, err := repository.NewRepositoryManager()

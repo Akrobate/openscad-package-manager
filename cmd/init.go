@@ -16,6 +16,9 @@ var initCmd = &cobra.Command{
 	Short: "Initializes scad.json file",
 	Long: `Initializes scad.json file.
 
+This command will create an empty scad.json file.
+You will be prompted for minimal informations
+
 Exemples:
   opm init`,
 	Args: cobra.MaximumNArgs(0),

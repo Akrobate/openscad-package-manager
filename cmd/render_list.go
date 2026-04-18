@@ -9,7 +9,7 @@ import (
 
 var renderListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "Show render list files",
+	Short: "Show render png / stl files",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("you must provide exactly one argument: \"stl\" or \"png\"")
