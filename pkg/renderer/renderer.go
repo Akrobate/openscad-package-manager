@@ -2,9 +2,11 @@ package renderer
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/Akrobate/openscad-package-manager/internal/utils"
@@ -183,5 +185,89 @@ func checkRenderTypeParam(renderType string) error {
 	if renderType != "stl" && renderType != "png" {
 		return fmt.Errorf("invalid render type: %s", renderType)
 	}
+	return nil
+}
+
+// @todo plug
+func GenerateImagesMarkdown(w io.Writer, pngFilesPath string) error {
+	fmt.Fprintln(w, "# Preview OpenSCAD renders")
+	fmt.Fprintln(w)
+
+	entries, err := os.ReadDir(pngFilesPath)
+	if err != nil {
+		return err
+	}
+
+	var dirs []string
+	var rootImages []string
+
+	for _, entry := range entries {
+		name := entry.Name()
+
+		if entry.IsDir() {
+			dirs = append(dirs, name)
+			continue
+		}
+
+		if strings.EqualFold(filepath.Ext(name), ".png") {
+			rootImages = append(rootImages, name)
+		}
+	}
+
+	sort.Strings(dirs)
+	sort.Strings(rootImages)
+
+	// Images présentes à la racine
+	if len(rootImages) > 0 {
+		fmt.Fprintln(w, "## Racine")
+		fmt.Fprintln(w)
+
+		for _, file := range rootImages {
+			name := strings.TrimSuffix(file, filepath.Ext(file))
+
+			fmt.Fprintf(w, "### %s\n", name)
+			fmt.Fprintf(w, "![%s](%s)\n\n",
+				name,
+				filepath.ToSlash(filepath.Join(filepath.Base(pngFilesPath), file)),
+			)
+		}
+	}
+
+	// Sous-répertoires
+	for _, dir := range dirs {
+		fmt.Fprintf(w, "## %s\n\n", strings.Title(dir))
+
+		entries, err := os.ReadDir(filepath.Join(pngFilesPath, dir))
+		if err != nil {
+			return err
+		}
+
+		var images []string
+		for _, entry := range entries {
+			if entry.IsDir() {
+				continue
+			}
+			if strings.EqualFold(filepath.Ext(entry.Name()), ".png") {
+				images = append(images, entry.Name())
+			}
+		}
+
+		sort.Strings(images)
+
+		if len(images) == 0 {
+			continue
+		}
+
+		for _, file := range images {
+			name := strings.TrimSuffix(file, filepath.Ext(file))
+
+			fmt.Fprintf(w, "### %s\n", name)
+			fmt.Fprintf(w, "![%s](%s)\n\n",
+				name,
+				filepath.ToSlash(filepath.Join(filepath.Base(pngFilesPath), dir, file)),
+			)
+		}
+	}
+
 	return nil
 }
