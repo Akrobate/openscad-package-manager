@@ -66,9 +66,15 @@ func (r *Renderer) Process(renderType string) error {
 		return err
 	}
 
+	if renderType == "md" {
+		r.GenerateImagesMarkdown(os.Stdout)
+		return nil
+	}
+
 	if !r.checkOpenscadInstalled() {
 		return fmt.Errorf("Openscad bin not foud")
 	}
+
 	files, err := utils.ListAllProjectScadFiles(".")
 
 	if err != nil {
@@ -182,16 +188,19 @@ func (r *Renderer) checkOpenscadInstalled() bool {
 
 // checkRenderTypeParam
 func checkRenderTypeParam(renderType string) error {
-	if renderType != "stl" && renderType != "png" {
+	if renderType != "stl" && renderType != "png" && renderType != "md" {
 		return fmt.Errorf("invalid render type: %s", renderType)
 	}
 	return nil
 }
 
-// @todo plug
-func GenerateImagesMarkdown(w io.Writer, pngFilesPath string) error {
+// GenerateImagesMarkdown
+func (r *Renderer) GenerateImagesMarkdown(w io.Writer) error {
+
 	fmt.Fprintln(w, "# Preview OpenSCAD renders")
 	fmt.Fprintln(w)
+
+	pngFilesPath := r.pngFilesFolderName
 
 	entries, err := os.ReadDir(pngFilesPath)
 	if err != nil {
@@ -219,7 +228,7 @@ func GenerateImagesMarkdown(w io.Writer, pngFilesPath string) error {
 
 	// Images présentes à la racine
 	if len(rootImages) > 0 {
-		fmt.Fprintln(w, "## Racine")
+		fmt.Fprintln(w, "## Root")
 		fmt.Fprintln(w)
 
 		for _, file := range rootImages {
