@@ -78,6 +78,27 @@ Versions:
 5d18bef	 https://gitlab.com/openscad-modules/housing.git#5d18bef
 ```
 
+### Process render png files
+
+```shell
+opm render process png
+```
+
+
+### Process render stl files
+
+```shell
+opm render process stl
+```
+
+
+### Render markdown
+
+```shell
+opm render process md
+```
+
+
 
 ### Package repository source list
 
@@ -140,6 +161,8 @@ go tool cover -html=coverage.out -o coverage.html
 
 - `cmd/`: Commands CLI (install, uninstall, list, search)
 - `pkg/manager/`: Business rules of package management
+- `pkg/renderer/`: Generate stl, png and documentation files
+- `pkg/repository/`: Manage packages source lists
 - `internal/utils`: Commons functions
 - `main.go`: Entry point
 
