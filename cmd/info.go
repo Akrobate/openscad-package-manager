@@ -9,13 +9,11 @@ import (
 
 var infoCmd = &cobra.Command{
 	Use:   "info [package]",
-	Short: "Info about an Openscad module",
-	Long: `Info about an Openscad package.
-	
-example:
-opm info https://gitlab.com/openscad-modules/breadboard.git
-	
-`,
+	Short: "Show information about an OpenSCAD package",
+	Long: `Shows information about an OpenSCAD package.
+
+Examples:
+  opm info https://gitlab.com/openscad-modules/breadboard.git`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return fmt.Errorf("you must provide the remote package url")

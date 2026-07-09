@@ -6,7 +6,7 @@ import (
 
 var renderCmd = &cobra.Command{
 	Use:   "render",
-	Short: "Render management",
+	Short: "Manage renders",
 }
 
 func init() {

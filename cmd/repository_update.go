@@ -9,7 +9,8 @@ import (
 
 var repositoryUpdateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Update source lists",
+	Short: "Update the source lists",
+	Long:  `Updates the source lists from the configured repositories.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		repositoryMgr, err := repository.NewRepositoryManager()
 		if err != nil {

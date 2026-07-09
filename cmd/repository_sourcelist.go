@@ -9,7 +9,8 @@ import (
 
 var repositorySourceListCmd = &cobra.Command{
 	Use:   "sourcelist",
-	Short: "Show repository list",
+	Short: "Show the repository lists",
+	Long:  `Shows the configured repository lists.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		repositoryMgr, err := repository.NewRepositoryManager()
 		if err != nil {

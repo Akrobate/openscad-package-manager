@@ -9,8 +9,8 @@ import (
 
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List project's installed packages",
-	Long:  `Show all project's installed packages`,
+	Short: "List the project's installed packages",
+	Long:  `Lists all the project's installed packages.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mgr, err := manager.NewManager()
 		if err != nil {

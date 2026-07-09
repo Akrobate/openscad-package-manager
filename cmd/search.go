@@ -9,10 +9,9 @@ import (
 
 var searchCmd = &cobra.Command{
 	Use:   "search [package]",
-	Short: "Search Openscad module",
-	Long: `Search Openscad modules.
-`,
-	Args: cobra.MaximumNArgs(1),
+	Short: "Search for OpenSCAD packages",
+	Long:  `Searches for OpenSCAD packages.`,
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		searchString := ""

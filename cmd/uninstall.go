@@ -10,9 +10,9 @@ import (
 var uninstallCmd = &cobra.Command{
 	Use:   "uninstall [package]",
 	Short: "Uninstall all installed packages",
-	Long: `Uninstall all installed packages
+	Long: `Uninstalls all installed packages.
 
-Exemples:
+Examples:
   opm uninstall`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {

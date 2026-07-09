@@ -6,7 +6,7 @@ import (
 
 var repositoryCmd = &cobra.Command{
 	Use:   "repository",
-	Short: "Repositories management",
+	Short: "Manage repositories",
 }
 
 func init() {

@@ -13,13 +13,13 @@ import (
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initializes scad.json file",
-	Long: `Initializes scad.json file.
+	Short: "Initialize the scad.json file",
+	Long: `Initializes the scad.json file.
 
 This command will create an empty scad.json file.
-You will be prompted for minimal informations
+You will be prompted for minimal information.
 
-Exemples:
+Examples:
   opm init`,
 	Args: cobra.MaximumNArgs(0),
 	RunE: func(cmd *cobra.Command, args []string) error {

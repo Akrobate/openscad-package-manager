@@ -9,10 +9,16 @@ import (
 
 var renderProcessCmd = &cobra.Command{
 	Use:   "process",
-	Short: "Process render png / stl / md files",
+	Short: "Process png / stl / md renders",
+	Long: `Processes png, stl or md renders.
+
+Examples:
+  opm render process stl
+  opm render process png
+  opm render process md`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
-			return fmt.Errorf("you must provide exactly one argument: \"stl\", \"png\", \"md\"")
+			return fmt.Errorf("you must provide exactly one argument: \"stl\", \"png\" or \"md\"")
 		}
 
 		if args[0] != "stl" && args[0] != "png" && args[0] != "md" {

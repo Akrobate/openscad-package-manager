@@ -12,14 +12,13 @@ import (
 
 var installCmd = &cobra.Command{
 	Use:   "install [package]",
-	Short: "Install Openscad module",
-	Long: `Installs Openscad module and its dependecies.
+	Short: "Install an OpenSCAD package",
+	Long: `Installs an OpenSCAD package and its dependencies.
 
-Install without params will install dependencies from the current scad.json file	
-Install with a repository will install this package latest version
+Install without params will install dependencies from the current scad.json file.
+Install with a repository will install this package's latest version.
 
-
-Exemples:
+Examples:
   opm install
   opm install https://gitlab.com/openscad-modules/housing.git
   opm install https://gitlab.com/openscad-modules/housing.git#0.0.2
