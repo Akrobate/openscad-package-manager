@@ -192,13 +192,13 @@ opm render list stl
 
 - Go 1.23 or newer
 
-### Build
+### Build (linux)
 
 ```bash
 go build -o opm
 ```
 
-### Build and install locally
+### Build and install locally (linux)
 
 ```bash
 go build -o opm && sudo cp opm /usr/local/bin/
@@ -208,6 +208,12 @@ go build -o opm && sudo cp opm /usr/local/bin/
 
 ```bash
 go test ./...
+```
+
+### Build (windows)
+
+```bash
+GOOS=windows GOARCH=amd64 go build -o opm.exe
 ```
 
 #### Coverage

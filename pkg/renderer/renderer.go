@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -28,12 +29,9 @@ func NewRenderer() (*Renderer, error) {
 }
 
 func (r *Renderer) List(renderType string) error {
+
 	if err := checkRenderTypeParam(renderType); err != nil {
 		return err
-	}
-
-	if !r.checkOpenscadInstalled() {
-		return fmt.Errorf("Openscad bin not foud")
 	}
 
 	files, err := utils.ListAllProjectScadFiles(".")
@@ -131,7 +129,9 @@ func (r *Renderer) generatePngFile(file string, anotationsList []map[string]stri
 func (r *Renderer) generateOpenscadPngCommandLineParams(file string, anotationsList []map[string]string) ([]string, error) {
 
 	dir := filepath.Dir(file)
+
 	pngFileFolder := filepath.Join(r.pngFilesFolderName, dir)
+
 	err := os.MkdirAll(pngFileFolder, os.ModePerm)
 	if err != nil {
 		return nil, fmt.Errorf("Error %s", err)
@@ -183,7 +183,24 @@ func (r *Renderer) runOpenscadCommand(args []string) error {
 // checkOpenscadInstalled
 func (r *Renderer) checkOpenscadInstalled() bool {
 	_, err := exec.LookPath(r.openscadBinFile)
-	return err == nil
+	if err == nil {
+		return true
+	}
+	if runtime.GOOS == "windows" {
+		defaultPaths := []string{
+			`C:\Program Files\OpenSCAD\openscad.exe`,
+			`C:\Program Files (x86)\OpenSCAD\openscad.exe`,
+			filepath.Join(os.Getenv("LocalAppData"), `Programs\OpenSCAD\openscad.exe`),
+		}
+
+		for _, path := range defaultPaths {
+			if _, err := os.Stat(path); err == nil {
+				r.openscadBinFile = path
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // checkRenderTypeParam

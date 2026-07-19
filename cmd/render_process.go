@@ -38,8 +38,7 @@ Examples:
 		if err != nil {
 			return fmt.Errorf("failed to initialize renderer: %w", err)
 		}
-		renderer.Process(outputType)
-		return nil
+		return renderer.Process(outputType)
 	},
 }
 

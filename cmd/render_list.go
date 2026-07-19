@@ -37,8 +37,7 @@ Examples:
 		if err != nil {
 			return fmt.Errorf("failed to initialize renderer: %w", err)
 		}
-		renderer.List(outputType)
-		return nil
+		return renderer.List(outputType)
 	},
 }
 
