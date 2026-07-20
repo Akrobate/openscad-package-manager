@@ -139,6 +139,9 @@ func (r *Renderer) generateOpenscadPngCommandLineParams(file string, anotationsL
 
 	commandLineArgs := []string{}
 
+	// commandLineArgs = append(commandLineArgs, "--render")
+	// commandLineArgs = append(commandLineArgs, "--csglimit=0")
+
 	if utils.AnnotationsContainsKey(anotationsList, "colorscheme") {
 		commandLineArgs = append(commandLineArgs, fmt.Sprintf("--colorscheme=%s", utils.AnnotationsGetValue(anotationsList, "colorscheme")))
 	}

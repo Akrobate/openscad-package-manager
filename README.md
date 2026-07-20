@@ -23,7 +23,7 @@ sudo mv opm /usr/local/bin/
 
 ### Windows
 
-Download and extract the archive from the [latest release](https://github.com/Akrobate/openscad-package-manager/releases/latest), then add `opm.exe` to your `PATH`.
+Download and extract the archive from the [latest release](https://github.com/Akrobate/openscad-package-manager/releases/latest), then add `opm.exe` to your `PATH` or you can put the `opm.exe` in `C:\Windows\System32`
 
 ## Usage
 
