@@ -51,11 +51,11 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 }
 
-func askUser(promt string, defaultValue string) string {
+func askUser(prompt string, defaultValue string) string {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf(promt + ": ")
+	fmt.Printf("%s: ", prompt)
 	if defaultValue != "" {
-		fmt.Printf("(" + defaultValue + ") ")
+		fmt.Printf("(%s) ", defaultValue)
 	}
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSpace(input)

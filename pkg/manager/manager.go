@@ -50,7 +50,7 @@ func (m *Manager) InstallCurrent() error {
 	pkg, err := m.loadPackageMetadata(dir)
 
 	if err != nil {
-		return fmt.Errorf(m.PackageFile + " not found")
+		return fmt.Errorf("%s not found", m.PackageFile)
 	}
 
 	for _, repository_url := range pkg.Dependencies {
@@ -68,7 +68,7 @@ func (m *Manager) Install(packageSpec string, isSubDependecy bool) (string, erro
 	packageURL, err := utils.GetURLFromDependencySpecString(packageSpec)
 
 	if err != nil {
-		return "", fmt.Errorf("Cannot parse url of dependency: " + packageName)
+		return "", fmt.Errorf("Cannot parse url of dependency: %s", packageName)
 	}
 
 	fmt.Println("Installing: " + packageName + " url: " + packageSpec)
