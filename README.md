@@ -23,7 +23,33 @@ sudo mv opm /usr/local/bin/
 
 ### Windows
 
-Download and extract the archive from the [latest release](https://github.com/Akrobate/openscad-package-manager/releases/latest), then add `opm.exe` to your `PATH` or you can put the `opm.exe` in `C:\Windows\System32`
+Download and extract the archive from the [latest release](https://github.com/Akrobate/openscad-package-manager/releases/latest)
+
+#### Option 1: Local Usage (No Setup)
+
+Place `opm.exe` directly into the root folder of your OpenSCAD project, then run commands from your terminal:
+
+```powershell
+# Example for initing a new project with scad.json file
+.\opm.exe init
+```
+
+#### Option 2: Global Installation (Recommended)
+
+To run the opm command from any directory:
+
+- Quick: Move opm.exe to C:\Windows\System32 (requires administrator rights).
+- Recommended:
+  1. Move opm.exe to a dedicated folder (e.g., C:\Tools\opm\).
+  2. Add that folder path to your user PATH environment variable.
+  3. Restart your terminal.
+
+You can then run opm directly anywhere:
+
+```PowerShell
+# Example for initing a new project with scad.json file
+opm init
+```
 
 ## Usage
 
