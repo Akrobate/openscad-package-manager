@@ -129,14 +129,14 @@ func DirExists(path string) bool {
 }
 
 func FileExists(path string) bool {
-	_, err := os.Stat(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
+	_, err := os.Stat(filepath.Clean(path))
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
 		return false
 	}
-	return true
+	return false
 }
 
 func URLToFilenameHash(u string) string {
