@@ -98,11 +98,11 @@ func (r *Renderer) Process(renderType string) error {
 			}
 
 			if generationError != nil {
-				fmt.Printf("❌ %s\n", file)
+				fmt.Printf("[Error] %s\n", file)
 				fmt.Println(generationError)
 				continue
 			} else {
-				fmt.Printf("✅ %s\n", file)
+				fmt.Printf("[Ok] %s\n", file)
 			}
 		}
 	}
