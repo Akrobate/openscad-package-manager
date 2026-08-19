@@ -65,8 +65,7 @@ func (r *Renderer) Process(renderType string) error {
 	}
 
 	if renderType == "md" {
-		r.GenerateImagesMarkdown(os.Stdout)
-		return nil
+		return r.GenerateImagesMarkdown(os.Stdout)
 	}
 
 	if !r.checkOpenscadInstalled() {
@@ -172,7 +171,6 @@ func (r *Renderer) generateOpenscadStlCommandLineParams(file string) ([]string, 
 	return paramsStlGeneration, nil
 }
 
-// runOpenscadCommand
 func (r *Renderer) runOpenscadCommand(args []string) error {
 	cmd := exec.Command(r.openscadBinFile, args...)
 
@@ -183,7 +181,6 @@ func (r *Renderer) runOpenscadCommand(args []string) error {
 	return nil
 }
 
-// checkOpenscadInstalled
 func (r *Renderer) checkOpenscadInstalled() bool {
 	_, err := exec.LookPath(r.openscadBinFile)
 	if err == nil {
@@ -206,7 +203,6 @@ func (r *Renderer) checkOpenscadInstalled() bool {
 	return false
 }
 
-// checkRenderTypeParam
 func checkRenderTypeParam(renderType string) error {
 	if renderType != "stl" && renderType != "png" && renderType != "md" {
 		return fmt.Errorf("invalid render type: %s", renderType)
@@ -214,10 +210,9 @@ func checkRenderTypeParam(renderType string) error {
 	return nil
 }
 
-// GenerateImagesMarkdown
 func (r *Renderer) GenerateImagesMarkdown(w io.Writer) error {
 
-	fmt.Fprintln(w, "# Preview OpenSCAD renders")
+	fmt.Fprintln(w, "## Preview OpenSCAD renders")
 	fmt.Fprintln(w)
 
 	pngFilesPath := r.pngFilesFolderName
@@ -246,9 +241,9 @@ func (r *Renderer) GenerateImagesMarkdown(w io.Writer) error {
 	sort.Strings(dirs)
 	sort.Strings(rootImages)
 
-	// Images présentes à la racine
+	// Root images
 	if len(rootImages) > 0 {
-		fmt.Fprintln(w, "## Root")
+		fmt.Fprintln(w, "### Main")
 		fmt.Fprintln(w)
 
 		for _, file := range rootImages {
@@ -262,9 +257,9 @@ func (r *Renderer) GenerateImagesMarkdown(w io.Writer) error {
 		}
 	}
 
-	// Sous-répertoires
+	// Subfolders
 	for _, dir := range dirs {
-		fmt.Fprintf(w, "## %s\n\n", strings.Title(dir))
+		fmt.Fprintf(w, "### %s\n\n", strings.Title(dir))
 
 		entries, err := os.ReadDir(filepath.Join(pngFilesPath, dir))
 		if err != nil {
@@ -290,7 +285,7 @@ func (r *Renderer) GenerateImagesMarkdown(w io.Writer) error {
 		for _, file := range images {
 			name := strings.TrimSuffix(file, filepath.Ext(file))
 
-			fmt.Fprintf(w, "### %s\n", name)
+			fmt.Fprintf(w, "#### %s\n", name)
 			fmt.Fprintf(w, "![%s](%s)\n\n",
 				name,
 				filepath.ToSlash(filepath.Join(filepath.Base(pngFilesPath), dir, file)),
